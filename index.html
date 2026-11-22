@@ -315,6 +315,13 @@
             <div class="flex justify-between text-xs mb-1">
               <span class="font-medium text-sumi">Relationships</span>
               <span class="font-mono text-xs font-semibold" id="val-relationships">60</span>
+            </div>
+            <div class="w-full bg-washi border border-borderSubtle rounded-full h-2 overflow-hidden">
+              <div id="bar-relationships" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 60%"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Net Worth & Monthly Income -->
         <div class="bg-washi border border-borderSubtle rounded-xl p-3 space-y-2">
           <div>
@@ -520,7 +527,7 @@
           <span class="font-semibold text-sumi block mb-0.5">Behind the Data</span>
           How a non-engineer in Tokyo built this statistical life simulator with AI + 4-file External Memory →
         </div>
-        <a href="https://substack.com" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-mono font-semibold text-vermilion hover:underline">
+        <a href="https://tokyoaiops.substack.com" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-mono font-semibold text-vermilion hover:underline">
           Read on Tokyo AI Ops (Substack) ↗
         </a>
       </div>
@@ -1017,6 +1024,53 @@
       if (!state || !state.alive || modalOpen) return;
       if (isPlaying) pauseGame();
       else playGame();
+    }
+
+    function playGame() {
+      if (!state || !state.alive || modalOpen) return;
+      isPlaying = true;
+      clearInterval(timer);
+      timer = setInterval(tickYear, getTickMs());
+      document.getElementById('play-icon').textContent = '⏸';
+      document.getElementById('play-label').textContent = 'Pause';
+    }
+
+    function pauseGame() {
+      isPlaying = false;
+      clearInterval(timer);
+      timer = null;
+      const icon = document.getElementById('play-icon');
+      const label = document.getElementById('play-label');
+      if (icon) icon.textContent = '▶';
+      if (label) label.textContent = 'Play';
+    }
+
+    function stepOneYear() {
+      if (!state || !state.alive || modalOpen) return;
+      pauseGame();
+      tickYear();
+    }
+
+    function jumpToNextChoice() {
+      if (!state || !state.alive || modalOpen) return;
+      pauseGame();
+      let guard = 0;
+      while (state.alive && !modalOpen && guard < 150) {
+        tickYear();
+        guard++;
+      }
+    }
+
+    function toggleAutoPlay() {
+      autoPlay = !autoPlay;
+      const btn = document.getElementById('btn-autoplay');
+      if (btn) {
+        btn.classList.toggle('bg-sumi', autoPlay);
+        btn.classList.toggle('text-white', autoPlay);
+        btn.classList.toggle('bg-washi', !autoPlay);
+        btn.classList.toggle('text-slateMuted', !autoPlay);
+        btn.setAttribute('aria-pressed', String(autoPlay));
+      }
     }
     function formatCompactUSD(usd) {
       const sign = usd < 0 ? '-' : '';
@@ -1660,48 +1714,9 @@
             desc: 'Compulsory schooling shapes your early friendships and curiosity.',
             context: 'After the 1872 Gakusei reform, Japan achieved near-universal elementary school enrollment within a single generation.',
             choices: [
-              { label: 'Inherit Family Farm / Trade', pct: 68, moneyDelta: 12, effect: () => { state.occupation = state.socialClass.split(' ')[0]; state.netWorth += 12; addLog(`You take up your family's hereditary role as a ${state.occupation}, adding ${formatMoney(12, 'Ryo', true)} to your household.`); } },
-              { label: 'Apprentice in Edo or Osaka', pct: 22, effect: () => { state.occupation = 'Merchant Clerk (Tedai)'; state.location = 'Musashi Province (Tokyo)'; state.stats.knowledge = clamp(state.stats.knowledge + 12, 0, 100); state.highlights.push('Moved to the bustling capital as an apprentice'); addLog('You leave home for a bustling merchant house in the city.'); } },
-              { label: 'Serve a Local Domain Lord', pct: 10, moneyDelta: 20, effect: () => { state.occupation = 'Domain Retainer'; state.netWorth += 20; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog(`You secure a stipend of ${formatMoney(20, 'Ryo', true)} serving a regional Daimyo.`); } }
-            ]
-          });
-          return true;
-        } else if (y >= 1991 && y <= 2005) {
-          openDecisionModal({
-            tag: 'Career Crossroads',
-            title: 'Graduating into the Employment Ice Age',
-            desc: 'The Bubble has burst. Corporate hiring has frozen nationwide.',
-            context: 'The "Employment Ice Age" (Shushoku Hyogaki, 1993–2004) saw new-graduate job-to-applicant ratios plunge, creating a generation of non-regular workers.',
-            choices: [
-              { label: 'Go to University (Delay Job Hunt)', pct: 48, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 18, 0, 100); addLog('You enter university, hoping the job market recovers before graduation.'); } },
-              { label: 'Take a Local / SME Job', pct: 32, moneyDelta: 1200000, effect: () => { state.occupation = 'SME Office Worker'; state.netWorth += 1200000; addLog(`You secure a steady role at a local SME, building ${formatMoney(1200000, 'Yen', true)} in early savings.`); } },
-              { label: 'Part-time (Freeter) & Side Hustles', pct: 20, effect: () => { state.occupation = 'Freeter / Freelancer'; state.stats.happiness = clamp(state.stats.happiness + 6, 0, 100); addLog('You piece together flexible work while searching for your own path.'); } }
-            ]
-          });
-          return true;
-        } else if (y >= 2019) {
-          openDecisionModal({
-            tag: 'AI-Era Career',
-            title: 'Choosing Your Path in Modern Japan',
-            desc: 'University enrollment is at a record high, while AI and remote work are rewriting traditional corporate ladders.',
-            context: 'By the 2020s, over 57% of Japanese 18-year-olds entered 4-year universities (MEXT), while traditional lifetime employment (Shushin Koyo) began giving way to skill-based hiring.',
-            choices: [
-              { label: 'Enter University', pct: 57, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You enroll in university, blending traditional study with AI tools.'); } },
-              { label: 'Vocational / Tech School', pct: 24, moneyDelta: 1500000, effect: () => { state.education = 'Vocational College'; state.occupation = 'Tech / Design Specialist'; state.netWorth += 1500000; state.highlights.push('Built practical skills at a vocational college'); addLog(`You choose hands-on technical training and earn ${formatMoney(1500000, 'Yen', true)} early in your career.`); } },
-              { label: 'Direct Employment / Startup', pct: 19, moneyDelta: 2200000, effect: () => { state.occupation = 'Startup / BizOps Associate'; state.netWorth += 2200000; state.highlights.push('Joined a fast-moving Tokyo startup'); addLog(`You jump straight into a Tokyo startup, banking ${formatMoney(2200000, 'Yen', true)} from early execution.`); } }
-            ]
-          });
-          return true;
-        } else {
-          openDecisionModal({
-            tag: 'Career Crossroads',
-            title: 'Entering the Workforce',
-            desc: 'Japan is transforming rapidly. Where will you build your career?',
-            context: 'During the Post-war Miracle, "Shushin Koyo" (lifetime employment) and seniority-based pay became the pillars of Japan\'s middle class.',
-            choices: [
-              { label: 'Join a Major Corporation (Salaryman)', pct: 42, moneyDelta: 1800000, effect: () => { state.occupation = 'Corporate Salaryman'; state.netWorth += 1800000; state.highlights.push('Joined a major Japanese corporation'); addLog(`You enter a major company, adding ${formatMoney(1800000, 'Yen', true)} in early compensation.`); } },
-              { label: 'University / Higher Study', pct: 33, effect: () => { state.education = 'University'; state.occupation = 'Graduate Specialist'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You pursue higher education to open doors in management or research.'); } },
-              { label: 'Family Business / Local Trade', pct: 25, moneyDelta: 1200000, effect: () => { state.occupation = 'Local Business Owner'; state.netWorth += 1200000; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog(`You stay rooted in your community, earning ${formatMoney(1200000, 'Yen', true)} in local trade.`); } }
+              { label: 'Focus on Studies', pct: 45, effect: () => { state.education = 'Elementary School (Studious)'; state.stats.knowledge = clamp(state.stats.knowledge + 15, 0, 100); state.highlights.push('Top of the class in elementary school'); addLog('You throw yourself into your lessons and become known as a bright student.'); } },
+              { label: 'Play Outside with Friends', pct: 40, effect: () => { state.education = 'Elementary School'; state.stats.relationships = clamp(state.stats.relationships + 12, 0, 100); state.stats.health = clamp(state.stats.health + 6, 0, 100); addLog('You spend long afternoons outside, building lifelong friendships.'); } },
+              { label: 'Help with the Family Business', pct: 15, effect: () => { state.education = 'Elementary School'; state.stats.happiness = clamp(state.stats.happiness + 4, 0, 100); state.stats.knowledge = clamp(state.stats.knowledge + 6, 0, 100); addLog('After school you help out at home, learning how money and work really flow.'); } }
             ]
           });
           return true;

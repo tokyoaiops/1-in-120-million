@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1 in 120 Million — A Statistical Life in Japan (1603–2026+)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            washi: '#F8F7F4',
+            sumi: '#111827',
+            vermilion: '#D92D20',
+            vermilionDark: '#B42318',
+            slateMuted: '#6B7280',
+            borderSubtle: '#E5E2DC',
+            paper: '#FFFFFF',
+          },
+          fontFamily: {
+            serif: ['"Noto Serif"', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F8F7F4;
+      color: #111827;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-serif-editorial {
+      font-family: 'Noto Serif', Georgia, serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #F3F1EC;
+      border-radius: 999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #D1CDC4;
+      border-radius: 999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #9CA3AF;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.28s ease-out forwards;
+    }
+    .stamp-border {
+      border: 2px solid #D92D20;
+      color: #D92D20;
+      transform: rotate(-4deg);
+    }
+    .pixelated {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-red-100 selection:text-vermilion">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-sumi text-white text-sm px-4 py-2.5 rounded-lg shadow-lg border border-gray-700 transition-opacity duration-200">
+    <span id="toast-msg">Copied to clipboard</span>
+  </div>
+
+  <!-- ==================== SCREEN 1: START SCREEN ==================== -->
+  <main id="screen-start" class="flex-1 flex flex-col justify-center items-center px-4 py-10 max-w-4xl mx-auto w-full">
+    <div class="w-full bg-paper border border-borderSubtle rounded-2xl shadow-sm p-6 sm:p-10 animate-fade-in">
+      <!-- Editorial Header -->
+      <div class="flex items-center justify-between border-b border-borderSubtle pb-4 mb-6">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-vermilion"></span>
+          <span class="font-mono text-xs uppercase tracking-widest text-slateMuted">Interactive Historical Demography</span>
+        </div>
+        <span class="font-mono text-xs text-slateMuted">1603 — 2026+</span>
+      </div>
+
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <h1 class="font-serif-editorial text-4xl sm:text-5xl font-bold tracking-tight text-sumi mb-3">
+          1 in 120 Million
+        </h1>
+        <p class="text-base sm:text-lg text-slateMuted leading-relaxed">
+          Live a statistical life in Japan — from the Edo shogunate to the AI era.
+        </p>
+      </div>
+
+      <!-- Era Selector -->
+      <div class="mb-7">
+        <label class="block font-mono text-xs uppercase tracking-wider text-slateMuted mb-3">
+          Select Birth Era
+        </label>
+        <div id="era-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Options Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-washi border border-borderSubtle rounded-xl p-4 mb-8">
+        <div>
+          <span class="block font-mono text-xs uppercase tracking-wider text-slateMuted mb-2">Simulation Pace</span>
+          <div class="flex gap-2">
+            <button type="button" id="pace-normal" onclick="setPace('normal')" class="flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-sumi text-white border-sumi">
+              Normal
+            </button>
+            <button type="button" id="pace-quick" onclick="setPace('quick')" class="flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-paper text-sumi border-borderSubtle hover:bg-gray-50">
+              Quick
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between sm:pl-4 sm:border-l border-borderSubtle">
+          <div>
+            <span class="block text-sm font-semibold text-sumi">Dramatic Mode</span>
+            <span class="block text-xs text-slateMuted">Higher frequency of historical & personal crises</span>
+          </div>
+          <button type="button" id="dramatic-toggle" onclick="toggleDramatic()" aria-pressed="false" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-gray-300 focus:outline-none">
+            <span id="dramatic-knob" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Start CTA -->
+      <div class="text-center">
+        <button type="button" onclick="generateBirthCertificate()" class="w-full sm:w-auto px-8 py-3.5 bg-vermilion hover:bg-vermilionDark text-white font-semibold rounded-xl shadow-sm transition-all text-base tracking-wide">
+          Roll Your Birth Certificate →
+        </button>
+      </div>
+
+      <!-- Footer Note -->
+      <div class="mt-8 pt-5 border-t border-borderSubtle text-center text-xs text-slateMuted">
+        Inspired by <span class="font-medium text-sumi">'1 in 8 Billion'</span> • Grounded in Japanese historical demography &amp; e-Stat data • Built by <span class="font-medium text-sumi">Tokyo AI Ops</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== SCREEN 2: BIRTH CERTIFICATE ==================== -->
+  <section id="screen-birth" class="hidden flex-1 flex flex-col justify-center items-center px-4 py-8 max-w-2xl mx-auto w-full">
+    <div class="w-full bg-paper border border-borderSubtle rounded-2xl shadow-sm p-6 sm:p-9 animate-fade-in relative overflow-hidden">
+      <!-- Top Registry Strip -->
+      <div class="flex items-start justify-between border-b-2 border-sumi pb-4 mb-6">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-widest text-vermilion font-semibold" id="cert-registry-type">Historical Registry</p>
+          <h2 class="font-serif-editorial text-2xl sm:text-3xl font-bold text-sumi mt-1" id="cert-name">---</h2>
+          <p class="text-sm text-slateMuted mt-0.5" id="cert-sub">---</p>
+        </div>
+        <div class="stamp-border px-2.5 py-1 rounded text-xs font-mono font-bold uppercase tracking-wider shrink-0">
+          Verified
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
+        <div class="bg-washi p-3.5 rounded-xl border border-borderSubtle">
+          <span class="block font-mono text-[11px] uppercase text-slateMuted">Birth Year &amp; Gengo</span>
+          <span class="font-mono font-semibold text-sumi text-base" id="cert-year">---</span>
+        </div>
+        <div class="bg-washi p-3.5 rounded-xl border border-borderSubtle">
+          <span class="block font-mono text-[11px] uppercase text-slateMuted">Birthplace</span>
+          <span class="font-semibold text-sumi text-base" id="cert-place">---</span>
+        </div>
+        <div class="bg-washi p-3.5 rounded-xl border border-borderSubtle">
+          <span class="block font-mono text-[11px] uppercase text-slateMuted">Social Class / Household</span>
+          <span class="font-semibold text-sumi" id="cert-class">---</span>
+        </div>
+        <div class="bg-washi p-3.5 rounded-xl border border-borderSubtle">
+          <span class="block font-mono text-[11px] uppercase text-slateMuted">Family Wealth Tier</span>
+          <span class="font-semibold text-sumi" id="cert-wealth">---</span>
+        </div>
+        <div class="sm:col-span-2 bg-washi p-3.5 rounded-xl border border-borderSubtle">
+          <span class="block font-mono text-[11px] uppercase text-slateMuted">Parents' Occupations</span>
+          <span class="font-medium text-sumi" id="cert-parents">---</span>
+        </div>
+      </div>
+
+      <!-- Life Expectancy Comparison -->
+      <div class="bg-washi border border-borderSubtle rounded-xl p-4 mb-7">
+        <div class="flex items-center justify-between text-xs font-mono uppercase text-slateMuted mb-2">
+          <span>Life Expectancy at Birth</span>
+          <span id="cert-le-diff" class="text-vermilion font-semibold">---</span>
+        </div>
+        <div class="space-y-2.5">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-sumi">Your Birth Cohort (<span id="cert-le-era"></span>)</span>
+              <span class="font-mono font-semibold text-vermilion" id="cert-le-val">---</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="cert-le-bar" class="bg-vermilion h-2 rounded-full transition-all duration-500" style="width: 50%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slateMuted">Modern Japan Benchmark (e-Stat)</span>
+              <span class="font-mono text-slateMuted">84.5 yrs</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-sumi h-2 rounded-full" style="width: 84.5%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="button" onclick="generateBirthCertificate()" class="sm:w-1/3 py-3 px-4 rounded-xl border border-borderSubtle text-sumi font-medium hover:bg-washi transition-colors text-sm">
+          Re-roll
+        </button>
+        <button type="button" onclick="startGame()" class="sm:w-2/3 py-3 px-6 rounded-xl bg-sumi hover:bg-gray-800 text-white font-semibold transition-colors text-base shadow-sm">
+          Begin Life →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 3: MAIN GAME SCREEN ==================== -->
+  <section id="screen-game" class="hidden flex-1 flex flex-col w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 gap-4">
+    <!-- Top Historical News Ticker -->
+    <header class="bg-sumi text-white rounded-xl px-4 py-2.5 flex items-center gap-3 shadow-sm">
+      <span class="font-mono text-[11px] uppercase tracking-wider bg-vermilion text-white px-2 py-0.5 rounded shrink-0 font-semibold">
+        Chronicle
+      </span>
+      <div class="text-xs sm:text-sm font-mono truncate flex-1" id="news-ticker">
+        Loading historical timeline...
+      </div>
+      <button type="button" onclick="returnToStart()" class="text-xs text-gray-400 hover:text-white transition-colors shrink-0 ml-2">
+        Menu
+      </button>
+    </header>
+
+    <!-- 3-Column Responsive Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 items-start">
+
+      <!-- LEFT COLUMN: Profile & Stats (3 cols) -->
+      <aside class="lg:col-span-3 bg-paper border border-borderSubtle rounded-2xl p-4 sm:p-5 shadow-sm space-y-5">
+        <div class="border-b border-borderSubtle pb-3.5 flex items-center gap-3.5">
+          <div class="w-16 h-16 rounded-xl bg-washi border border-borderSubtle flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+            <canvas id="avatar-canvas" width="64" height="64" class="w-16 h-16 pixelated block"></canvas>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline justify-between gap-2">
+              <h2 class="font-serif-editorial text-lg sm:text-xl font-bold text-sumi truncate" id="hud-name">---</h2>
+              <span class="font-mono text-sm font-bold text-vermilion shrink-0" id="hud-age">Age 0</span>
+            </div>
+            <p class="font-mono text-xs text-slateMuted mt-0.5 truncate" id="hud-year">---</p>
+          </div>
+        </div>
+
+        <!-- Bio Details -->
+        <dl class="space-y-2 text-xs">
+          <div class="flex justify-between gap-2">
+            <dt class="text-slateMuted">Location</dt>
+            <dd class="font-medium text-sumi text-right" id="hud-location">---</dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-slateMuted">Status / Role</dt>
+            <dd class="font-medium text-sumi text-right" id="hud-job">---</dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-slateMuted">Education</dt>
+            <dd class="font-medium text-sumi text-right" id="hud-edu">---</dd>
+          </div>
+          <div class="flex justify-between gap-2">
+            <dt class="text-slateMuted">Family</dt>
+            <dd class="font-medium text-sumi text-right" id="hud-family">Single</dd>
+          </div>
+        </dl>
+
+        <!-- 4 Core Progress Bars -->
+        <div class="space-y-3 pt-2 border-t border-borderSubtle">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-sumi flex items-center gap-1">Happiness <span class="text-[10px] text-slateMuted font-normal" title="Subject to hedonic adaptation toward ~50">(adapts)</span></span>
+              <span class="font-mono text-xs font-semibold" id="val-happiness">50</span>
+            </div>
+            <div class="w-full bg-washi border border-borderSubtle rounded-full h-2 overflow-hidden">
+              <div id="bar-happiness" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-sumi">Health</span>
+              <span class="font-mono text-xs font-semibold" id="val-health">85</span>
+            </div>
+            <div class="w-full bg-washi border border-borderSubtle rounded-full h-2 overflow-hidden">
+              <div id="bar-health" class="bg-emerald-600 h-full rounded-full transition-all duration-300" style="width: 85%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-sumi">Knowledge</span>
+              <span class="font-mono text-xs font-semibold" id="val-knowledge">15</span>
+            </div>
+            <div class="w-full bg-washi border border-borderSubtle rounded-full h-2 overflow-hidden">
+              <div id="bar-knowledge" class="bg-blue-600 h-full rounded-full transition-all duration-300" style="width: 15%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium text-sumi">Relationships</span>
+              <span class="font-mono text-xs font-semibold" id="val-relationships">60</span>
+        <!-- Net Worth & Monthly Income -->
+        <div class="bg-washi border border-borderSubtle rounded-xl p-3 space-y-2">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-[11px] uppercase text-slateMuted">Net Worth</span>
+              <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-paper border border-borderSubtle text-sumi" id="hud-wealth-status">Modest</span>
+            </div>
+            <div class="font-mono text-lg font-bold text-sumi mt-1 leading-tight" id="hud-networth">0</div>
+            <div class="font-mono text-[11px] text-slateMuted mt-0.5 cursor-help" id="hud-networth-usd" title=""></div>
+          </div>
+          <div class="pt-2 border-t border-borderSubtle/80 flex items-baseline justify-between gap-2">
+            <span class="font-mono text-[10px] uppercase text-slateMuted shrink-0">Est. Monthly</span>
+            <div class="font-mono text-xs font-semibold text-sumi text-right leading-tight" id="hud-income">---</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CENTER COLUMN: Controls & Life Log (6 cols) -->
+      <section class="lg:col-span-6 flex flex-col gap-3">
+        <!-- Pixel Art Era & Family Diorama Stage -->
+        <div class="bg-paper border border-borderSubtle rounded-2xl p-3 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5 px-1">
+            <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted" id="scene-label">Era Diorama</span>
+            <span class="font-mono text-[11px] text-slateMuted" id="scene-family-tag">Solo</span>
+          </div>
+          <div class="w-full h-32 sm:h-36 rounded-xl overflow-hidden border border-borderSubtle bg-washi">
+            <canvas id="scene-canvas" width="320" height="100" class="w-full h-full pixelated block"></canvas>
+          </div>
+        </div>
+
+        <!-- Focus & Playback Controls Card -->
+        <div class="bg-paper border border-borderSubtle rounded-2xl p-4 shadow-sm space-y-3.5">
+          <!-- Focus Selector -->
+          <div>
+            <span class="block font-mono text-[11px] uppercase tracking-wider text-slateMuted mb-2">This Year's Focus</span>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5" id="focus-buttons">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-borderSubtle">
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="btn-play" onclick="togglePlay()" class="px-4 py-2 rounded-lg bg-vermilion hover:bg-vermilionDark text-white font-semibold text-xs sm:text-sm transition-colors flex items-center gap-1.5">
+                <span id="play-icon">▶</span> <span id="play-label">Play</span>
+              </button>
+              <button type="button" onclick="stepOneYear()" class="px-3 py-2 rounded-lg bg-washi hover:bg-gray-200 border border-borderSubtle text-sumi font-mono text-xs font-medium transition-colors" title="Advance 1 Year">
+                +1 Yr
+              </button>
+              <button type="button" onclick="jumpToNextChoice()" class="px-3 py-2 rounded-lg bg-sumi hover:bg-gray-800 text-white text-xs font-medium transition-colors">
+                Jump to Choice ⏭
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <div class="inline-flex rounded-lg border border-borderSubtle bg-washi p-0.5 font-mono text-xs">
+                <button type="button" id="spd-1" onclick="setSpeed(1)" class="px-2 py-1 rounded-md bg-paper text-sumi font-semibold shadow-sm">1x</button>
+                <button type="button" id="spd-4" onclick="setSpeed(4)" class="px-2 py-1 rounded-md text-slateMuted hover:text-sumi">4x</button>
+                <button type="button" id="spd-16" onclick="setSpeed(16)" class="px-2 py-1 rounded-md text-slateMuted hover:text-sumi">16x</button>
+              </div>
+              <button type="button" id="btn-autoplay" onclick="toggleAutoPlay()" class="px-2.5 py-1.5 rounded-lg border border-borderSubtle bg-washi text-slateMuted text-xs font-medium hover:text-sumi transition-colors" title="Automatically resume after choices">
+                Auto: OFF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Life Log -->
+        <div class="bg-paper border border-borderSubtle rounded-2xl shadow-sm flex flex-col h-[520px] sm:h-[580px]">
+          <div class="px-4 py-3 border-b border-borderSubtle flex items-center justify-between">
+            <span class="font-mono text-xs uppercase tracking-wider text-slateMuted">Life Chronicle</span>
+            <span class="font-mono text-xs text-slateMuted" id="log-count">0 entries</span>
+          </div>
+          <div id="life-log" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
+            <!-- Yearly events appended here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Survival Curve & Era Data (3 cols) -->
+      <aside class="lg:col-span-3 space-y-4">
+        <!-- Cohort Survival Curve -->
+        <div class="bg-paper border border-borderSubtle rounded-2xl p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-mono text-xs uppercase tracking-wider text-slateMuted">Cohort Survival Curve</h3>
+            <span class="font-mono text-xs font-semibold text-vermilion" id="survival-pct">100%</span>
+          </div>
+          <p class="text-[11px] text-slateMuted mb-3" id="survival-caption">Share of your birth cohort still alive at your current age.</p>
+          <div class="relative w-full h-44">
+            <canvas id="survival-canvas" class="w-full h-full block"></canvas>
+          </div>
+          <div class="flex justify-between font-mono text-[10px] text-slateMuted mt-1">
+            <span>Age 0</span>
+            <span>50</span>
+            <span>100</span>
+          </div>
+        </div>
+
+        <!-- Era Snapshot -->
+        <div class="bg-paper border border-borderSubtle rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-borderSubtle pb-2">
+            <h3 class="font-mono text-xs uppercase tracking-wider text-slateMuted">Era Snapshot</h3>
+            <span class="font-mono text-[11px] font-semibold text-sumi" id="snap-era-name">---</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-washi p-2.5 rounded-lg border border-borderSubtle">
+              <span class="block font-mono text-[10px] uppercase text-slateMuted">Life Exp.</span>
+              <span class="font-mono text-sm font-bold text-sumi" id="snap-le">---</span>
+            </div>
+            <div class="bg-washi p-2.5 rounded-lg border border-borderSubtle">
+              <span class="block font-mono text-[10px] uppercase text-slateMuted">Infant Mort.</span>
+              <span class="font-mono text-sm font-bold text-vermilion" id="snap-im">---</span>
+            </div>
+          </div>
+          <p class="text-xs text-slateMuted leading-relaxed" id="snap-traits">---</p>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ==================== MODAL: INTERACTIVE DECISION / MILESTONE ==================== -->
+  <div id="modal-overlay" class="fixed inset-0 z-40 hidden bg-sumi/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-paper border border-borderSubtle rounded-2xl shadow-xl max-w-lg w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto custom-scroll">
+      <div class="flex items-center justify-between mb-2">
+        <span id="modal-tag" class="font-mono text-[11px] uppercase tracking-wider px-2.5 py-0.5 rounded bg-red-50 text-vermilion font-semibold">Life Decision</span>
+        <span id="modal-age-year" class="font-mono text-xs text-slateMuted">Age 18 • 1989</span>
+      </div>
+      <h3 id="modal-title" class="font-serif-editorial text-xl sm:text-2xl font-bold text-sumi mb-2">---</h3>
+      <p id="modal-desc" class="text-sm text-gray-700 leading-relaxed mb-4">---</p>
+
+      <!-- Historical Context Box inside Modal -->
+      <div id="modal-context-box" class="hidden bg-washi border-l-2 border-vermilion rounded-r-lg p-3 mb-5 text-xs text-slateMuted leading-relaxed">
+        <span class="font-semibold text-sumi">📊 Context:</span> <span id="modal-context-text"></span>
+      </div>
+
+      <!-- Choices Container -->
+      <div id="modal-choices" class="space-y-2.5">
+        <!-- Buttons injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 4: DEATH / LIFE SUMMARY ==================== -->
+  <section id="screen-summary" class="hidden flex-1 flex flex-col justify-center items-center px-4 py-8 max-w-3xl mx-auto w-full">
+    <div class="w-full bg-paper border border-borderSubtle rounded-2xl shadow-sm p-6 sm:p-9 animate-fade-in">
+      <!-- Header -->
+      <div class="text-center border-b border-borderSubtle pb-6 mb-6">
+        <p class="font-mono text-xs uppercase tracking-widest text-vermilion font-semibold mb-2">In Memoriam • Statistical Record</p>
+        <h2 class="font-serif-editorial text-3xl sm:text-4xl font-bold text-sumi mb-2" id="sum-title">---</h2>
+        <p class="font-mono text-sm text-slateMuted" id="sum-dates">---</p>
+      </div>
+
+      <!-- Key Metrics Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div class="bg-washi border border-borderSubtle rounded-xl p-3 text-center">
+          <span class="block font-mono text-[10px] uppercase text-slateMuted">Age at Death</span>
+          <span class="font-mono text-2xl font-bold text-sumi" id="sum-age">---</span>
+        </div>
+        <div class="bg-washi border border-borderSubtle rounded-xl p-3 text-center">
+          <span class="block font-mono text-[10px] uppercase text-slateMuted">Peers Outlived</span>
+          <span class="font-mono text-2xl font-bold text-vermilion" id="sum-percentile">---</span>
+        </div>
+        <div class="bg-washi border border-borderSubtle rounded-xl p-3 text-center">
+          <span class="block font-mono text-[10px] uppercase text-slateMuted">Final Role</span>
+          <span class="text-sm font-semibold text-sumi block mt-1 truncate" id="sum-job">---</span>
+        </div>
+        <div class="bg-washi border border-borderSubtle rounded-xl p-3 text-center">
+          <span class="block font-mono text-[10px] uppercase text-slateMuted">Final Estate</span>
+          <span class="font-mono text-sm font-bold text-sumi block mt-1" id="sum-worth">---</span>
+          <span class="font-mono text-[11px] text-slateMuted block mt-0.5 cursor-help" id="sum-worth-usd" title=""></span>
+        </div>
+      </div>
+
+      <!-- Details & Highlights -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
+        <div class="bg-washi border border-borderSubtle rounded-xl p-4 space-y-2">
+          <div><span class="text-slateMuted text-xs font-mono uppercase">Cause of Death:</span> <p class="font-medium text-sumi" id="sum-cause">---</p></div>
+          <div><span class="text-slateMuted text-xs font-mono uppercase">Eras Lived Through:</span> <p class="font-medium text-sumi" id="sum-eras">---</p></div>
+          <div><span class="text-slateMuted text-xs font-mono uppercase">Birthplace:</span> <p class="font-medium text-sumi" id="sum-place">---</p></div>
+        </div>
+        <div class="bg-washi border border-borderSubtle rounded-xl p-4">
+          <span class="text-slateMuted text-xs font-mono uppercase block mb-2">Key Life Highlights</span>
+          <ul id="sum-highlights" class="space-y-1.5 text-xs text-sumi list-disc list-inside">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Viral Share Actions -->
+      <div class="flex flex-col sm:flex-row gap-3 mb-6">
+        <button type="button" onclick="downloadShareCard()" class="flex-1 py-3 px-4 rounded-xl bg-vermilion hover:bg-vermilionDark text-white font-semibold text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+          <span>⬇ Download Share Card (PNG)</span>
+        </button>
+        <button type="button" onclick="copyShareText()" class="flex-1 py-3 px-4 rounded-xl bg-sumi hover:bg-gray-800 text-white font-semibold text-sm transition-colors shadow-sm flex items-center justify-center gap-2">
+          <span>📋 Copy Share Text (X / Reddit)</span>
+        </button>
+      </div>
+
+      <!-- Tokyo AI Ops Subtle High-Value CTA -->
+      <div class="bg-washi border border-borderSubtle rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="text-xs text-slateMuted leading-relaxed">
+          <span class="font-semibold text-sumi block mb-0.5">Behind the Data</span>
+          How a non-engineer in Tokyo built this statistical life simulator with AI + 4-file External Memory →
+        </div>
+        <a href="https://substack.com" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-mono font-semibold text-vermilion hover:underline">
+          Read on Tokyo AI Ops (Substack) ↗
+        </a>
+      </div>
+
+      <!-- Replay Button -->
+      <div class="text-center">
+        <button type="button" onclick="returnToStart()" class="w-full sm:w-auto px-8 py-3 rounded-xl border-2 border-sumi text-sumi hover:bg-sumi hover:text-white font-semibold text-sm transition-colors">
+          Live Another Life ↻
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hidden Offscreen Canvas for 1200x630 PNG Share Card -->
+  <canvas id="share-canvas" width="1200" height="630" class="hidden"></canvas>
+
+  <script>
+    // =========================================================================
+    // 1. HISTORICAL DATA, ERAS, DEMOGRAPHY & GENGO CALCULATOR
+    // =========================================================================
+    const ERAS = [
+      {
+        id: 'random',
+        name: 'Random (All Eras)',
+        years: '1603–2026',
+        range: [1603, 2026],
+        desc: 'Roll across 420+ years of Japanese history.'
+      },
+      {
+        id: 'edo',
+        name: 'Edo Period',
+        years: '1603–1867',
+        range: [1603, 1867],
+        le: 36.5,
+        infantMort: '22%',
+        traits: 'Tokugawa shogunate, strict Shinokosho (4-class) system, isolation (Sakoku), high urban literacy via Terakoya, periodic famines.'
+      },
+      {
+        id: 'meiji',
+        name: 'Meiji & Taisho',
+        years: '1868–1925',
+        range: [1868, 1925],
+        le: 43.2,
+        infantMort: '15%',
+        traits: 'Rapid Westernization, abolition of samurai domains, compulsory schooling, railroads, textile boom, and the 1923 Great Kanto Earthquake.'
+      },
+      {
+        id: 'prewar',
+        name: 'Showa Pre-war & WWII',
+        years: '1926–1949',
+        range: [1926, 1949],
+        le: 49.0,
+        infantMort: '11%',
+        traits: 'Great Depression, military expansion, WWII mobilization & air raids, followed by postwar scarcity and democratic reforms.'
+      },
+      {
+        id: 'postwar',
+        name: 'Post-war & Bubble',
+        years: '1950–1988',
+        range: [1950, 1988],
+        le: 71.5,
+        infantMort: '2.5%',
+        traits: 'Economic Miracle, Shinkansen & 1964 Olympics, lifetime employment (Shushin Koyo), rising middle class, culminating in the 1980s Bubble.'
+      },
+      {
+        id: 'heisei',
+        name: 'Heisei & Ice Age',
+        years: '1989–2018',
+        range: [1989, 2018],
+        le: 81.2,
+        infantMort: '0.3%',
+        traits: 'Post-bubble stagnation, Employment Ice Age, mobile internet & anime boom, 2011 Tohoku earthquake, and rapid aging.'
+      },
+      {
+        id: 'reiwa',
+        name: 'Reiwa & AI Era',
+        years: '2019–2026',
+        range: [2019, 2026],
+        le: 84.5,
+        infantMort: '0.18%',
+        traits: 'Super-aging society, remote work & digital transformation, record inbound tourism, and AI-native careers (2026+ projected).'
+      }
+    ];
+
+    function getEraByYear(year) {
+      if (year <= 1867) return ERAS[1];
+      if (year <= 1925) return ERAS[2];
+      if (year <= 1949) return ERAS[3];
+      if (year <= 1988) return ERAS[4];
+      if (year <= 2018) return ERAS[5];
+      return ERAS[6];
+    }
+
+    // Japanese Gengo (Era Name) lookup
+    function getGengo(year) {
+      const table = [
+        [2019, 'Reiwa'], [1989, 'Heisei'], [1926, 'Showa'], [1912, 'Taisho'], [1868, 'Meiji'],
+        [1865, 'Keio'], [1864, 'Genji'], [1861, 'Bunkyu'], [1860, 'Manen'], [1854, 'Ansei'],
+        [1848, 'Kaei'], [1844, 'Koka'], [1830, 'Tenpo'], [1818, 'Bunsei'], [1804, 'Bunka'],
+        [1801, 'Kyowa'], [1789, 'Kansei'], [1781, 'Tenmei'], [1772, 'Anei'], [1764, 'Meiwa'],
+        [1751, 'Horeki'], [1748, 'Kanen'], [1744, 'Enkyo'], [1741, 'Kanpo'], [1736, 'Genbun'],
+        [1716, 'Kyoho'], [1711, 'Shotoku'], [1704, 'Hoei'], [1688, 'Genroku'], [1684, 'Jokyo'],
+        [1681, 'Tenna'], [1673, 'Enpo'], [1661, 'Kanbun'], [1658, 'Manji'], [1655, 'Meireki'],
+        [1652, 'Joo'], [1648, 'Keian'], [1644, 'Shoho'], [1624, 'Kanei'], [1615, 'Genna'],
+        [1596, 'Keicho']
+      ];
+      for (const [start, name] of table) {
+        if (year >= start) {
+          const n = year - start + 1;
+          return `${name} ${n === 1 ? '1 (Gannen)' : n}`;
+        }
+      }
+      return 'Edo';
+    }
+
+    // Historical News Ticker Events
+    const HISTORICAL_NEWS = {
+      1603: "Tokugawa Ieyasu is appointed Shogun; Edo becomes the seat of power.",
+      1615: "Siege of Osaka ends; over 250 years of Tokugawa peace begins.",
+      1635: "Sankin-kotai (alternate attendance) forces regional lords to reside in Edo every other year.",
+      1639: "Sakoku (national isolation) policy completed; foreign trade restricted to Nagasaki.",
+      1657: "Great Fire of Meireki destroys over 60% of Edo; city is rebuilt with wider firebreaks.",
+      1688: "Genroku cultural golden age flourishes: Kabuki, Haiku, and Ukiyo-e thrive.",
+      1707: "Mount Fuji erupts (Hoei Eruption), blanketing Edo in volcanic ash.",
+      1716: "Shogun Yoshimune launches the Kyoho Reforms to stabilize rice finances.",
+      1782: "Great Tenmei Famine strikes northern Japan after volcanic winters.",
+      1833: "Great Tenpo Famine begins; widespread crop failures and rice riots.",
+      1853: "Commodore Perry's Black Ships arrive in Uraga, demanding Japan open its ports.",
+      1855: "Ansei Edo Earthquake rocks the shogunate capital.",
+      1868: "Meiji Restoration: Tokugawa shogunate falls; Edo is renamed Tokyo.",
+      1871: "Abolition of the Han system; feudal provinces become modern prefectures.",
+      1872: "Japan's first railway opens between Shinbashi and Yokohama.",
+      1889: "Meiji Constitution promulgated; Imperial Diet established.",
+      1894: "First Sino-Japanese War breaks out.",
+      1904: "Russo-Japanese War begins; Japan emerges as a major world power.",
+      1912: "Emperor Meiji passes away; Taisho Democracy era begins.",
+      1918: "Rice Riots sweep Japan amid postwar inflation; Spanish Flu arrives.",
+      1923: "Great Kanto Earthquake devastates Tokyo and Yokohama.",
+      1926: "Showa era begins; radio broadcasting expands nationwide.",
+      1929: "Global Great Depression hits Japanese silk exports and rural farms.",
+      1937: "Second Sino-Japanese War begins; wartime rationing intensifies.",
+      1941: "Pacific War begins; nationwide mobilization deepens.",
+      1945: "WWII ends after devastating air raids and atomic bombings; Allied Occupation begins.",
+      1947: "Postwar Constitution of Japan takes effect.",
+      1955: "Japan enters its High-Growth Economic Miracle; 'Three Sacred Treasures' (TV, washer, fridge) boom.",
+      1964: "Tokyo Summer Olympics open; Tokaido Shinkansen bullet train debuts.",
+      1970: "Expo '70 opens in Osaka, drawing 64 million visitors.",
+      1973: "First Oil Shock ends double-digit GDP growth.",
+      1985: "Plaza Accord doubles the Yen's value; asset price bubble inflates.",
+      1989: "Nikkei 225 peaks at 38,915; Heisei era begins.",
+      1991: "Asset Bubble bursts; 'Lost Decades' and Employment Ice Age begin.",
+      1995: "Great Hanshin-Awaji Earthquake strikes Kobe; Windows 95 sparks PC boom.",
+      2001: "Mobile internet (i-mode) spreads rapidly across Japan.",
+      2008: "Global Financial Crisis (Lehman Shock) hits Japanese exporters.",
+      2011: "Great East Japan Earthquake & Tsunami strike Tohoku.",
+      2019: "Reiwa era begins.",
+      2020: "COVID-19 pandemic accelerates remote work and digital shift.",
+      2024: "Nikkei 225 finally surpasses its 1989 Bubble peak; inbound tourism hits record highs.",
+      2026: "AI-native workflows reshape Tokyo offices amid a super-aging demographic shift."
+    };
+
+    function getTickerForYear(year) {
+      if (HISTORICAL_NEWS[year]) return `${year} (${getGengo(year)}): ${HISTORICAL_NEWS[year]}`;
+      if (year > 2026) {
+        const futureNotes = [
+          "Projected: Autonomous transit and AI care-assistants expand across aging prefectures.",
+          "Projected: Japan's working-age population adapts through high-automation BizOps.",
+          "Projected: Regional revitalization hubs attract remote workers outside Tokyo.",
+          "Projected: Longevity medicine pushes average life expectancy past 87 years."
+        ];
+        return `${year} (${getGengo(year)}): ${futureNotes[year % futureNotes.length]}`;
+      }
+      // Find most recent milestone
+      const keys = Object.keys(HISTORICAL_NEWS).map(Number).sort((a,b) => b - a);
+      const recent = keys.find(k => k <= year);
+      return `${year} (${getGengo(year)}) — Era context: ${HISTORICAL_NEWS[recent] || 'Daily life unfolds across Japan.'}`;
+    }
+
+    // Cohort Survival Curve Data (probability of being alive at ages 0, 1, 5, 15, 30, 50, 65, 80, 90, 100)
+    const SURVIVAL_CURVES = {
+      edo:     [[0,100],[1,80],[5,68],[15,62],[30,54],[50,38],[65,20],[80,4],[90,0.5],[100,0]],
+      meiji:   [[0,100],[1,85],[5,76],[15,72],[30,63],[50,49],[65,31],[80,9],[90,1.5],[100,0]],
+      prewar:  [[0,100],[1,89],[5,83],[15,80],[30,68],[50,58],[65,44],[80,18],[90,4],[100,0.2]],
+      postwar: [[0,100],[1,97.5],[5,96.5],[15,96],[30,94],[50,89],[65,78],[80,48],[90,18],[100,1.5]],
+      heisei:  [[0,100],[1,99.7],[5,99.5],[15,99.3],[30,98.6],[50,96.2],[65,90],[80,68],[90,34],[100,4]],
+      reiwa:   [[0,100],[1,99.8],[5,99.7],[15,99.6],[30,99.1],[50,97.4],[65,92.5],[80,74],[90,41],[100,6.5]]
+    };
+
+    function getSurvivalRate(eraId, age) {
+      const pts = SURVIVAL_CURVES[eraId] || SURVIVAL_CURVES.reiwa;
+      if (age <= 0) return 100;
+      if (age >= 100) return pts[pts.length - 1][1];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const [a1, p1] = pts[i];
+        const [a2, p2] = pts[i + 1];
+        if (age >= a1 && age <= a2) {
+          const t = (age - a1) / (a2 - a1);
+          return p1 + t * (p2 - p1);
+        }
+      }
+      return 0;
+    }
+
+    // Names & Places
+    const SURNAMES = ['Sato', 'Suzuki', 'Takahashi', 'Tanaka', 'Watanabe', 'Ito', 'Yamamoto', 'Nakamura', 'Kobayashi', 'Kato', 'Yoshida', 'Yamada', 'Sasaki', 'Yamaguchi', 'Matsumoto', 'Inoue', 'Kimura', 'Hayashi', 'Shimizu', 'Saito'];
+    const NAMES = {
+      edo: {
+        M: ['Taro', 'Jiro', 'Shinzaemon', 'Kichibei', 'Heisuke', 'Gennosuke', 'Shosuke', 'Mataemon'],
+        F: ['O-Hana', 'O-Kiku', 'O-Matsu', 'O-Taki', 'O-Sayo', 'O-Yuki', 'O-Kiyo', 'O-Tome']
+      },
+      meiji: {
+        M: ['Ichiro', 'Kenji', 'Shigeru', 'Tadashi', 'Masao', 'Hideo', 'Saburo', 'Kiyoshi'],
+        F: ['Fumiko', 'Chiyoko', 'Haruko', 'Shizuko', 'Toshiko', 'Katsuko', 'Yoshiko', 'Mitsuko']
+      },
+      modern: {
+        M: ['Kenji', 'Daiki', 'Ren', 'Haruto', 'Yuto', 'Takuya', 'Sota', 'Kaito', 'Shinji', 'Hiroshi'],
+        F: ['Yui', 'Aoi', 'Sakura', 'Hina', 'Mei', 'Akari', 'Natsuki', 'Miyu', 'Kaori', 'Emi']
+      }
+    };
+
+    const PLACES_EDO = [
+      'Musashi Province (Tokyo)', 'Yamashiro Province (Kyoto)', 'Settsu Province (Osaka)',
+      'Satsuma Province (Kagoshima)', 'Owari Province (Aichi)', 'Mutsu Province (Sendai / Tohoku)',
+      'Chikuzen Province (Fukuoka)', 'Kaga Province (Ishikawa)', 'Echigo Province (Niigata)', 'Nagato Province (Yamaguchi)'
+    ];
+    const PLACES_MODERN = [
+      'Tokyo', 'Osaka', 'Kanagawa', 'Aichi', 'Hokkaido', 'Fukuoka', 'Kyoto', 'Miyagi', 'Hiroshima', 'Niigata', 'Nagano', 'Okinawa'
+    ];
+
+    const FOCUS_OPTIONS = [
+      { id: 'balance', label: 'Balance', icon: '⚖️' },
+      { id: 'study',   label: 'Study',   icon: '📚' },
+      { id: 'work',    label: 'Work',    icon: '💼' },
+      { id: 'health',  label: 'Health',  icon: '🌿' },
+      { id: 'social',  label: 'Social',  icon: '🤝' }
+    ];
+
+    // =========================================================================
+    // 2. GAME STATE
+    // =========================================================================
+    let config = {
+      selectedEra: 'random',
+      pace: 'normal',
+      dramatic: false
+    };
+
+    let state = null;
+    let timer = null;
+    let isPlaying = false;
+    let speed = 1;
+    let autoPlay = false;
+    let modalOpen = false;
+
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+
+    // =========================================================================
+    // 3. INITIALIZATION & START SCREEN UI
+    // =========================================================================
+    function initStartScreen() {
+      const grid = document.getElementById('era-grid');
+      grid.innerHTML = '';
+      ERAS.forEach(era => {
+        const active = config.selectedEra === era.id;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => {
+          config.selectedEra = era.id;
+          initStartScreen();
+        };
+        btn.className = `text-left p-3.5 rounded-xl border transition-all ${
+          active
+            ? 'border-vermilion bg-red-50/40 ring-1 ring-vermilion'
+            : 'border-borderSubtle bg-paper hover:bg-washi'
+        }`;
+        btn.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-sm text-sumi">${era.name}</span>
+            <span class="font-mono text-[11px] ${active ? 'text-vermilion font-semibold' : 'text-slateMuted'}">${era.years}</span>
+          </div>
+          <p class="text-xs text-slateMuted line-clamp-2">${era.desc || era.traits}</p>
+        `;
+        grid.appendChild(btn);
+      });
+
+      const focusContainer = document.getElementById('focus-buttons');
+      focusContainer.innerHTML = '';
+      FOCUS_OPTIONS.forEach(f => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = `focus-${f.id}`;
+        btn.onclick = () => setFocus(f.id);
+        btn.className = 'py-1.5 px-2 rounded-lg border text-xs font-medium transition-colors flex items-center justify-center gap-1';
+        btn.innerHTML = `<span>${f.icon}</span><span>${f.label}</span>`;
+        focusContainer.appendChild(btn);
+      });
+    }
+
+    function setPace(p) {
+      config.pace = p;
+      document.getElementById('pace-normal').className = p === 'normal'
+        ? 'flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-sumi text-white border-sumi'
+        : 'flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-paper text-sumi border-borderSubtle hover:bg-gray-50';
+      document.getElementById('pace-quick').className = p === 'quick'
+        ? 'flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-sumi text-white border-sumi'
+        : 'flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors bg-paper text-sumi border-borderSubtle hover:bg-gray-50';
+    }
+
+    function toggleDramatic() {
+      config.dramatic = !config.dramatic;
+      const btn = document.getElementById('dramatic-toggle');
+      const knob = document.getElementById('dramatic-knob');
+      btn.setAttribute('aria-pressed', config.dramatic);
+      btn.className = `relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${config.dramatic ? 'bg-vermilion' : 'bg-gray-300'}`;
+      knob.className = `pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${config.dramatic ? 'translate-x-5' : 'translate-x-0'}`;
+    }
+
+    function showScreen(id) {
+      ['screen-start', 'screen-birth', 'screen-game', 'screen-summary'].forEach(s => {
+        document.getElementById(s).classList.add('hidden');
+      });
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function returnToStart() {
+      pauseGame();
+      closeModal();
+      showScreen('screen-start');
+    }
+
+    // =========================================================================
+    // 4. BIRTH CERTIFICATE GENERATOR
+    // =========================================================================
+    function generateBirthCertificate() {
+      let eraObj;
+      if (config.selectedEra === 'random') {
+        eraObj = pick(ERAS.slice(1));
+      } else {
+        eraObj = ERAS.find(e => e.id === config.selectedEra);
+      }
+      const birthYear = rand(eraObj.range[0], eraObj.range[1]);
+      const gender = Math.random() < 0.5 ? 'Male' : 'Female';
+      const gKey = gender === 'Male' ? 'M' : 'F';
+      const namePool = birthYear <= 1867 ? NAMES.edo : (birthYear <= 1945 ? NAMES.meiji : NAMES.modern);
+      const surname = pick(SURNAMES);
+      const given = pick(namePool[gKey]);
+      const fullName = `${given} ${surname}`;
+
+      const birthplace = birthYear < 1871 ? pick(PLACES_EDO) : pick(PLACES_MODERN);
+
+      // Social Class & Parents
+      let socialClass = 'Common Citizen';
+      let parents = '';
+      let wealthTier = rand(1, 5);
+
+      if (birthYear <= 1867) {
+        const r = Math.random();
+        if (r < 0.07) {
+          socialClass = 'Samurai (Bushi)';
+          parents = 'Domain retainer & Samurai household mother';
+          wealthTier = rand(3, 5);
+        } else if (r < 0.85) {
+          socialClass = 'Farmer (Hyakusho)';
+          parents = 'Rice farmers in a rural village';
+          wealthTier = rand(1, 3);
+        } else if (r < 0.93) {
+          socialClass = 'Artisan (Shokunin)';
+          parents = 'Master carpenter & textile weaver';
+          wealthTier = rand(2, 4);
+        } else {
+          socialClass = 'Merchant (Chonin)';
+          parents = 'Rice & dry-goods shopkeepers';
+          wealthTier = rand(3, 5);
+        }
+      } else if (birthYear <= 1949) {
+        socialClass = wealthTier >= 4 ? 'Urban Middle Class' : (wealthTier <= 2 ? 'Rural Farming Household' : 'Working Family');
+        parents = wealthTier <= 2 ? 'Smallholder farmers' : (wealthTier >= 4 ? 'Civil servant & homemaker' : 'Factory worker & seamstress');
+      } else {
+        socialClass = wealthTier >= 4 ? 'Upper-Middle Class' : (wealthTier <= 2 ? 'Modest Household' : 'Middle Class');
+        parents = wealthTier >= 4 ? 'Corporate manager & educator' : (wealthTier <= 2 ? 'Retail clerk & part-time worker' : 'Office worker (Salaryman) & nurse');
+      }
+
+      const initialWealth = birthYear <= 1867
+        ? wealthTier * 8 // Ryo
+        : wealthTier * (birthYear < 1950 ? 500 : 800000); // Yen
+
+      state = {
+        name: fullName,
+        gender,
+        birthYear,
+        year: birthYear,
+        age: 0,
+        birthEra: eraObj,
+        erasLived: new Set([eraObj.name]),
+        birthplace,
+        location: birthplace,
+        socialClass,
+        parents,
+        wealthTier,
+        occupation: 'Infant',
+        education: 'None yet',
+        married: false,
+        children: 0,
+        focus: 'balance',
+        stats: {
+          happiness: clamp(45 + wealthTier * 4, 30, 75),
+          health: clamp(75 + wealthTier * 3 + rand(-5, 5), 60, 95),
+          knowledge: 10,
+          relationships: clamp(55 + rand(-5, 10), 40, 80)
+        },
+        netWorth: initialWealth,
+        currency: birthYear <= 1867 ? 'Ryo' : 'Yen',
+        alive: true,
+        causeOfDeath: '',
+        highlights: [],
+        logCount: 0,
+        flags: {}
+      };
+
+      // Populate Birth Certificate UI
+      document.getElementById('cert-registry-type').textContent = birthYear >= 1948 ? 'Boshi Techo (Maternal & Child Health Handbook)' : 'Historical Family Registry (Koseki / Ninbetsucho)';
+      document.getElementById('cert-name').textContent = state.name;
+      document.getElementById('cert-sub').textContent = `${state.gender} • Born in the ${eraObj.name}`;
+      document.getElementById('cert-year').textContent = `${birthYear} — ${getGengo(birthYear)}`;
+      document.getElementById('cert-place').textContent = state.birthplace;
+      document.getElementById('cert-class').textContent = state.socialClass;
+      document.getElementById('cert-wealth').textContent = `Tier ${wealthTier} / 5 (${['Struggling', 'Modest', 'Average', 'Comfortable', 'Affluent'][wealthTier - 1]})`;
+      document.getElementById('cert-parents').textContent = state.parents;
+
+      const diff = (eraObj.le - 84.5).toFixed(1);
+      document.getElementById('cert-le-era').textContent = eraObj.name;
+      document.getElementById('cert-le-val').textContent = `${eraObj.le} yrs`;
+      document.getElementById('cert-le-diff').textContent = diff >= 0 ? 'Modern Peak' : `${diff} yrs vs. Today`;
+      document.getElementById('cert-le-bar').style.width = `${Math.min(100, eraObj.le)}%`;
+
+      showScreen('screen-birth');
+    }
+
+    // =========================================================================
+    // 5. MAIN GAME LOOP & UI UPDATES
+    // =========================================================================
+    function startGame() {
+      showScreen('screen-game');
+      document.getElementById('life-log').innerHTML = '';
+      setFocus('balance');
+      setSpeed(config.pace === 'quick' ? 4 : 1);
+
+      addLog(
+        `Born in ${state.birthplace} as a ${state.socialClass.toLowerCase()}.`,
+        state.birthYear <= 1867
+          ? `During the Edo period, social mobility was tightly regulated under the Shinokosho system, though urban literacy was among the highest in the world.`
+          : `Average life expectancy for your birth cohort was ${state.birthEra.le} years, with an infant mortality rate of ${state.birthEra.infantMort}.`,
+        'milestone'
+      );
+
+      updateHUD();
+      drawSurvivalCurve();
+      playGame();
+    }
+
+    function setFocus(id) {
+      if (!state) return;
+      state.focus = id;
+      FOCUS_OPTIONS.forEach(f => {
+        const el = document.getElementById(`focus-${f.id}`);
+        if (!el) return;
+        el.className = f.id === id
+          ? 'py-1.5 px-2 rounded-lg border text-xs font-semibold transition-colors flex items-center justify-center gap-1 bg-sumi text-white border-sumi'
+          : 'py-1.5 px-2 rounded-lg border text-xs font-medium transition-colors flex items-center justify-center gap-1 bg-washi text-sumi border-borderSubtle hover:bg-gray-200';
+      });
+    }
+
+    function setSpeed(s) {
+      speed = s;
+      [1, 4, 16].forEach(val => {
+        const btn = document.getElementById(`spd-${val}`);
+        btn.className = val === s
+          ? 'px-2 py-1 rounded-md bg-paper text-sumi font-semibold shadow-sm'
+          : 'px-2 py-1 rounded-md text-slateMuted hover:text-sumi';
+      });
+      if (isPlaying) {
+        clearInterval(timer);
+        timer = setInterval(tickYear, getTickMs());
+      }
+    }
+
+    function getTickMs() {
+      const base = config.pace === 'quick' ? 650 : 1100;
+      return Math.max(70, Math.floor(base / speed));
+    }
+
+    function togglePlay() {
+      if (!state || !state.alive || modalOpen) return;
+      if (isPlaying) pauseGame();
+      else playGame();
+    }
+    function formatCompactUSD(usd) {
+      const sign = usd < 0 ? '-' : '';
+      const abs = Math.abs(usd);
+      if (abs >= 1000000) {
+        return `${sign}$${(abs / 1000000).toFixed(1).replace(/\.0$/, '')}m`;
+      }
+      if (abs >= 10000) {
+        return `${sign}$${Math.round(abs / 1000)}k`;
+      }
+      if (abs >= 1000) {
+        return `${sign}$${(abs / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+      }
+      return `${sign}$${Math.round(abs)}`;
+    }
+
+    function getUsdEquivalent(amount, currency) {
+      if (currency === 'Ryo') {
+        // 1 Edo Ryo ≈ $1,000 USD modern purchasing-power equivalent
+        return `(~${formatCompactUSD(amount * 1000)} equiv.)`;
+      }
+      // Modern JPY: ~150 JPY = $1 USD
+      return `(~${formatCompactUSD(amount / 150)})`;
+    }
+
+    function getCurrencyTooltip(currency) {
+      return currency === 'Ryo'
+        ? 'Historical purchasing-power estimate: 1 Edo Ryo ≈ $1,000 USD in modern terms.'
+        : 'Approximate USD equivalent at ~¥150 = $1 USD.';
+    }
+
+    function formatMoney(amount, currency, includeUsd = false) {
+      const primary = currency === 'Ryo'
+        ? `${Math.round(amount).toLocaleString()} Ryo`
+        : `¥${Math.round(amount).toLocaleString()}`;
+      if (!includeUsd) return primary;
+      return `${primary} ${getUsdEquivalent(amount, currency)}`;
+    }
+
+    function getEstimatedMonthlyIncome() {
+      if (!state || state.age < 15) return 0;
+      const focusMult = state.focus === 'work' ? 1.25 : (state.focus === 'study' ? 0.6 : 1.0);
+      if (state.currency === 'Ryo') {
+        const base = state.socialClass.includes('Samurai') || state.socialClass.includes('Merchant') ? 2.5 : 1.2;
+        return Math.max(1, Math.round(base * focusMult));
+      }
+      if (state.year < 1950) {
+        return Math.round((45 + state.stats.knowledge * 0.8) * focusMult);
+      }
+      const baseJpy = 190000 + state.stats.knowledge * 2600 + (state.age > 35 && state.age < 65 ? 90000 : 0);
+      return Math.round((baseJpy * focusMult) / 10000) * 10000;
+    }
+
+    function getWealthStatus(amount, currency) {
+      if (currency === 'Ryo') {
+        if (amount < 5) return 'Struggling';
+        if (amount < 25) return 'Modest';
+        if (amount < 80) return 'Comfortable';
+        return 'Prosperous';
+      }
+      if (amount < 500000) return 'Tight';
+      if (amount < 5000000) return 'Modest';
+      if (amount < 25000000) return 'Comfortable';
+      return 'Affluent';
+    }
+
+    function updateHUD() {
+      const curEra = getEraByYear(state.year);
+      state.erasLived.add(curEra.name);
+
+      // Currency conversion if crossing 1868
+      if (state.currency === 'Ryo' && state.year >= 1868) {
+        state.currency = 'Yen';
+        state.netWorth = Math.max(50, Math.round(state.netWorth * 40));
+        addLog(`The Meiji government introduces the Yen, converting your holdings to ${formatMoney(state.netWorth, 'Yen', true)}.`, 'Under the New Currency Act of 1871, Japan unified its fragmented feudal coinage into the decimal Yen.', 'info');
+      }
+
+      document.getElementById('news-ticker').textContent = getTickerForYear(state.year);
+      document.getElementById('hud-name').textContent = state.name;
+      document.getElementById('hud-age').textContent = `Age ${state.age}`;
+      document.getElementById('hud-year').textContent = `${state.year} (${getGengo(state.year)})`;
+      document.getElementById('hud-location').textContent = state.location;
+      document.getElementById('hud-job').textContent = state.occupation;
+      document.getElementById('hud-edu').textContent = state.education;
+      document.getElementById('hud-family').textContent = state.married
+        ? `Married${state.children > 0 ? ` • ${state.children} child${state.children > 1 ? 'ren' : ''}` : ''}`
+        : (state.children > 0 ? `Single • ${state.children} child` : 'Single');
+
+      ['happiness', 'health', 'knowledge', 'relationships'].forEach(k => {
+        const v = Math.round(state.stats[k]);
+        document.getElementById(`val-${k}`).textContent = v;
+        document.getElementById(`bar-${k}`).style.width = `${v}%`;
+      });
+
+      document.getElementById('hud-networth').textContent = formatMoney(state.netWorth, state.currency);
+      const hudUsd = document.getElementById('hud-networth-usd');
+      hudUsd.textContent = getUsdEquivalent(state.netWorth, state.currency);
+      hudUsd.title = getCurrencyTooltip(state.currency);
+      document.getElementById('hud-wealth-status').textContent = getWealthStatus(state.netWorth, state.currency);
+
+      const monthly = getEstimatedMonthlyIncome();
+      const hudInc = document.getElementById('hud-income');
+      if (monthly <= 0) {
+        hudInc.innerHTML = `<span class="text-slateMuted font-normal">None</span>`;
+      } else {
+        const tip = getCurrencyTooltip(state.currency);
+        hudInc.innerHTML = `${formatMoney(monthly, state.currency)}/mo <span class="block text-[10px] font-normal text-slateMuted cursor-help" title="${tip}">${getUsdEquivalent(monthly, state.currency)}</span>`;
+      }
+
+      // Right panel
+      const surv = getSurvivalRate(state.birthEra.id, state.age);
+      document.getElementById('survival-pct').textContent = `${surv.toFixed(1)}% alive`;
+      document.getElementById('snap-era-name').textContent = curEra.name;
+      document.getElementById('snap-le').textContent = `${curEra.le} yrs`;
+      document.getElementById('snap-im').textContent = curEra.infantMort;
+      document.getElementById('snap-traits').textContent = curEra.traits;
+
+      document.getElementById('scene-label').textContent = `${curEra.name} • ${state.location}`;
+      document.getElementById('scene-family-tag').textContent = state.married
+        ? `Household: ${2 + state.children}`
+        : (state.children > 0 ? `Household: ${1 + state.children}` : 'Solo');
+
+      drawSurvivalCurve();
+      renderPixelVisuals();
+    }
+
+    // =========================================================================
+    // 5.5 PIXEL ART ENGINE (AVATAR, ERA DIORAMA & FAMILY SPRITES)
+    // =========================================================================
+    let pixelFrame = 0;
+
+    function drawPixelSprite(ctx, ox, oy, s, opts) {
+      const {
+        age = 20,
+        gender = 'Male',
+        eraId = 'reiwa',
+        happiness = 50,
+        health = 80,
+        bob = 0,
+        isSpouse = false
+      } = opts;
+
+      const px = (x, y, w, h, color) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(Math.round(ox + x * s), Math.round(oy + (y + bob) * s), Math.round(w * s), Math.round(h * s));
+      };
+
+      const skin = health <= 35 ? '#E6D6C8' : '#F4C9A8';
+      const hair = age >= 60 ? '#D1D5DB' : '#1F2937';
+      const eyeColor = '#111827';
+
+      // Baby sprite (age < 4)
+      if (age < 4) {
+        const wrap = eraId === 'edo' ? '#B45309' : (gender === 'Female' ? '#F472B6' : '#60A5FA');
+        px(5, 8, 6, 5, skin); // head
+        px(6, 7, 4, 1, hair); // tiny hair tuft
+        px(6, 10, 1, 1, eyeColor);
+        px(9, 10, 1, 1, eyeColor);
+        px(5, 11, 1, 1, '#FCA5A5'); // blush
+        px(10, 11, 1, 1, '#FCA5A5');
+        px(4, 13, 8, 3, wrap); // swaddle
+        px(5, 13, 6, 1, '#FFFFFF');
+        return;
+      }
+
+      const isChild = age < 15;
+      const yOff = isChild ? 2 : 0;
+
+      // Era & Gender Attire Colors
+      let topCol = '#374151';
+      let botCol = '#1F2937';
+      let accentCol = '#D92D20';
+
+      if (eraId === 'edo') {
+        topCol = gender === 'Female' ? '#B91C1C' : '#334155';
+        botCol = topCol;
+        accentCol = gender === 'Female' ? '#F59E0B' : '#94A3B8';
+      } else if (eraId === 'meiji') {
+        topCol = gender === 'Female' ? '#E11D48' : '#1E293B';
+        botCol = gender === 'Female' ? '#581C87' : '#1E293B'; // Hakama / Gakuran
+        accentCol = '#FBBF24';
+      } else if (eraId === 'prewar') {
+        topCol = gender === 'Female' ? '#475569' : '#4B5563';
+        botCol = '#334155';
+        accentCol = '#CBD5E1';
+      } else if (eraId === 'postwar') {
+        topCol = gender === 'Female' ? '#D97706' : '#1E3A8A';
+        botCol = '#1F2937';
+        accentCol = '#D92D20';
+      } else {
+        // Heisei / Reiwa
+        topCol = isSpouse
+          ? (gender === 'Female' ? '#0D9488' : '#2563EB')
+          : (gender === 'Female' ? '#2563EB' : '#111827');
+        botCol = '#374151';
+        accentCol = '#F8FAFC';
+      }
+
+      // Hair back & top
+      if (gender === 'Female') {
+        px(4, 2 + yOff, 8, 3, hair);
+        px(3, 3 + yOff, 1, 5, hair);
+        px(12, 3 + yOff, 1, 5, hair);
+        if (eraId === 'edo' && !isChild) {
+          // Nihongami bun + Vermilion Kanzashi
+          px(6, 0 + yOff, 4, 2, hair);
+          px(10, 1 + yOff, 2, 1, '#D92D20');
+        }
+      } else {
+        if (eraId === 'edo' && !isChild) {
+          // Chonmage topknot
+          px(4, 2 + yOff, 8, 2, hair);
+          px(6, 1 + yOff, 4, 2, skin); // shaved pate
+          px(7, 0 + yOff, 2, 2, hair); // topknot
+        } else {
+          px(4, 1 + yOff, 8, 3, hair);
+          px(4, 3 + yOff, 1, 2, hair);
+          px(11, 3 + yOff, 1, 2, hair);
+        }
+      }
+
+      // Head / Face
+      px(5, 3 + yOff, 6, 5, skin);
+
+      // Eyes & Expression
+      if (happiness >= 72) {
+        // Happy squinting eyes + warm blush
+        px(6, 5 + yOff, 1, 1, eyeColor);
+        px(9, 5 + yOff, 1, 1, eyeColor);
+        px(5, 6 + yOff, 1, 1, '#FCA5A5');
+        px(10, 6 + yOff, 1, 1, '#FCA5A5');
+      } else if (happiness <= 30) {
+        // Downcast eyes + sweatdrop
+        px(6, 6 + yOff, 1, 1, eyeColor);
+        px(9, 6 + yOff, 1, 1, eyeColor);
+        px(11, 4 + yOff, 1, 2, '#38BDF8');
+      } else {
+        px(6, 5 + yOff, 1, 1, eyeColor);
+        px(9, 5 + yOff, 1, 1, eyeColor);
+      }
+
+      // Body / Torso
+      const bodyH = isChild ? 4 : 5;
+      px(4, 8 + yOff, 8, bodyH, topCol);
+
+      // Collar / Obi / Tie details
+      if (eraId === 'edo' || (eraId === 'meiji' && gender === 'Female')) {
+        px(7, 8 + yOff, 2, 2, '#FFFFFF'); // kimono collar
+        px(4, 10 + yOff, 8, 1, accentCol); // obi sash
+      } else {
+        px(7, 8 + yOff, 2, 1, '#FFFFFF'); // shirt collar
+        if (gender === 'Male' && !isChild) {
+          px(7, 9 + yOff, 2, 2, accentCol); // tie
+        }
+      }
+
+      // Arms
+      px(3, 8 + yOff, 1, bodyH - 1, topCol);
+      px(12, 8 + yOff, 1, bodyH - 1, topCol);
+      px(3, 8 + yOff + bodyH - 1, 1, 1, skin);
+      px(12, 8 + yOff + bodyH - 1, 1, 1, skin);
+
+      // Legs / Lower garment
+      const legY = 8 + yOff + bodyH;
+      const legH = 16 - legY;
+      if (eraId === 'edo' || (eraId === 'meiji' && gender === 'Female')) {
+        px(5, legY, 6, Math.max(1, legH - 1), botCol);
+        px(5, 15, 2, 1, '#F8F7F4'); // tabi socks
+        px(9, 15, 2, 1, '#F8F7F4');
+      } else {
+        px(5, legY, 2, legH, botCol);
+        px(9, legY, 2, legH, botCol);
+      }
+
+      // Elderly walking cane (age >= 72)
+      if (age >= 72) {
+        px(13, 10, 1, 6, '#78350F');
+        px(12, 10, 2, 1, '#78350F');
+      }
+
+      // Subtle Happiness Sparkle or Low Health Pulse
+      if (happiness >= 78 && (pixelFrame % 2 === 0)) {
+        px(13, 2 + yOff, 1, 1, '#F59E0B');
+        px(14, 1 + yOff, 1, 1, '#FDE68A');
+      } else if (health <= 32 && (pixelFrame % 2 === 0)) {
+        px(2, 2 + yOff, 1, 1, '#D92D20');
+      }
+    }
+
+    function drawEraBackdrop(ctx, w, h, eraId, frame) {
+      ctx.imageSmoothingEnabled = false;
+
+      // Sky gradient (crisp horizontal pixel bands)
+      const skies = {
+        edo:     ['#E7E5DF', '#F3EFE6', '#F8F7F4'],
+        meiji:   ['#DBEAFE', '#EFF6FF', '#F8F7F4'],
+        prewar:  ['#D1D5DB', '#E5E7EB', '#F3F4F6'],
+        postwar: ['#FDE68A', '#FEF3C7', '#FFFBEB'],
+        heisei:  ['#BAE6FD', '#E0F2FE', '#F8FAFC'],
+        reiwa:   ['#C7D2FE', '#E0E7FF', '#F8F7F4']
+      };
+      const pal = skies[eraId] || skies.reiwa;
+      ctx.fillStyle = pal[0]; ctx.fillRect(0, 0, w, 28);
+      ctx.fillStyle = pal[1]; ctx.fillRect(0, 28, w, 28);
+      ctx.fillStyle = pal[2]; ctx.fillRect(0, 56, w, 20);
+
+      // Drifting pixel clouds
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      const c1 = (frame * 2) % (w + 40) - 20;
+      const c2 = ((frame * 1) + 150) % (w + 40) - 20;
+      ctx.fillRect(c1, 10, 22, 5); ctx.fillRect(c1 + 4, 7, 12, 3);
+      ctx.fillRect(c2, 18, 18, 4); ctx.fillRect(c2 + 3, 15, 10, 3);
+
+      // Distant Mt. Fuji silhouette
+      ctx.fillStyle = '#94A3B8';
+      ctx.beginPath();
+      ctx.moveTo(210, 74); ctx.lineTo(255, 24); ctx.lineTo(269, 24); ctx.lineTo(314, 74);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.moveTo(246, 34); ctx.lineTo(255, 24); ctx.lineTo(269, 24); ctx.lineTo(278, 34);
+      ctx.fill();
+
+      // Era-specific Skyline / Architecture
+      if (eraId === 'edo') {
+        // Castle keep & machiya roofs
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(26, 34, 28, 40); // castle base
+        ctx.fillStyle = '#1E293B';
+        ctx.fillRect(20, 44, 40, 4);
+        ctx.fillRect(24, 34, 32, 4);
+        ctx.fillRect(29, 26, 22, 8);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(30, 38, 20, 6);
+        // Vermilion Torii Gate
+        ctx.fillStyle = '#D92D20';
+        ctx.fillRect(184, 52, 26, 3);
+        ctx.fillRect(187, 56, 20, 2);
+        ctx.fillRect(189, 55, 3, 19);
+        ctx.fillRect(202, 55, 3, 19);
+        // Traditional thatched houses
+        ctx.fillStyle = '#78350F';
+        ctx.fillRect(74, 54, 34, 20);
+        ctx.fillStyle = '#451A03';
+        ctx.fillRect(70, 50, 42, 6);
+      } else if (eraId === 'meiji') {
+        // Red brick Western-style station
+        ctx.fillStyle = '#991B1B';
+        ctx.fillRect(22, 42, 76, 32);
+        ctx.fillStyle = '#1E293B';
+        ctx.fillRect(20, 38, 80, 4);
+        ctx.fillStyle = '#FEF3C7';
+        for (let wx = 28; wx < 92; wx += 12) {
+          ctx.fillRect(wx, 48, 6, 8);
+          ctx.fillRect(wx, 60, 6, 8);
+        }
+        // Steam locomotive puffing in background
+        const tx = (w - ((frame * 4) % (w + 60)));
+        ctx.fillStyle = '#111827';
+        ctx.fillRect(tx, 64, 24, 8);
+        ctx.fillRect(tx + 2, 59, 4, 5);
+        ctx.fillStyle = '#E5E7EB';
+        ctx.fillRect(tx + 1, 54, 5, 4);
+      } else if (eraId === 'prewar') {
+        // Wooden machiya row + utility poles
+        ctx.fillStyle = '#4B5563';
+        ctx.fillRect(18, 48, 44, 26);
+        ctx.fillRect(68, 52, 40, 22);
+        ctx.fillStyle = '#1F2937';
+        ctx.fillRect(16, 44, 48, 4);
+        ctx.fillRect(66, 48, 44, 4);
+        ctx.fillRect(130, 32, 2, 42); // utility pole
+        ctx.fillRect(124, 36, 14, 2);
+      } else if (eraId === 'postwar') {
+        // Tokyo Tower + Shinkansen
+        ctx.fillStyle = '#D92D20';
+        ctx.fillRect(54, 18, 4, 56);
+        ctx.fillRect(48, 44, 16, 4);
+        ctx.fillRect(44, 62, 24, 12);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(54, 32, 4, 8);
+        ctx.fillRect(52, 54, 8, 6);
+        // Mid-century buildings
+        ctx.fillStyle = '#64748B';
+        ctx.fillRect(96, 42, 26, 32);
+        ctx.fillRect(128, 48, 22, 26);
+        // Shinkansen bullet train
+        const sx = ((frame * 8) % (w + 80)) - 60;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(sx, 66, 44, 6);
+        ctx.fillStyle = '#1D4ED8';
+        ctx.fillRect(sx, 69, 44, 2);
+      } else {
+        // Heisei / Reiwa Modern Tokyo Skyline + Skytree
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(20, 36, 22, 38);
+        ctx.fillRect(48, 26, 26, 48);
+        ctx.fillRect(80, 42, 20, 32);
+        ctx.fillRect(182, 38, 24, 36);
+        // Skytree silhouette
+        ctx.fillStyle = '#64748B';
+        ctx.fillRect(142, 10, 4, 64);
+        ctx.fillRect(139, 34, 10, 4);
+        ctx.fillRect(138, 56, 12, 18);
+        // Lit windows
+        ctx.fillStyle = '#FEF08A';
+        for (let y = 32; y < 68; y += 8) {
+          ctx.fillRect(52, y, 4, 3);
+          ctx.fillRect(62, y, 4, 3);
+        }
+      }
+
+      // Ground / Street
+      ctx.fillStyle = eraId === 'edo' ? '#D6CFC2' : '#CBD5E1';
+      ctx.fillRect(0, 74, w, 26);
+      ctx.fillStyle = '#94A3B8';
+      ctx.fillRect(0, 74, w, 2);
+    }
+
+    function renderPixelVisuals() {
+      if (!state) return;
+      const curEra = getEraByYear(state.year);
+      const bob = (pixelFrame % 2 === 0) ? 0 : -0.5;
+
+      // 1. Left Panel Avatar (64x64)
+      const avCanvas = document.getElementById('avatar-canvas');
+      if (avCanvas) {
+        const ctx = avCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, 64, 64);
+        drawPixelSprite(ctx, 8, 8, 3, {
+          age: state.age,
+          gender: state.gender,
+          eraId: curEra.id,
+          happiness: state.stats.happiness,
+          health: state.stats.health,
+          bob
+        });
+      }
+
+      // 2. Center Panel Era Diorama & Family Portrait (320x100)
+      const scCanvas = document.getElementById('scene-canvas');
+      if (scCanvas) {
+        const ctx = scCanvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        drawEraBackdrop(ctx, 320, 100, curEra.id, pixelFrame);
+
+        // Player sprite (center-left)
+        drawPixelSprite(ctx, 118, 52, 2.4, {
+          age: state.age,
+          gender: state.gender,
+          eraId: curEra.id,
+          happiness: state.stats.happiness,
+          health: state.stats.health,
+          bob
+        });
+
+        // Spouse sprite (if married)
+        if (state.married) {
+          const spouseGender = state.gender === 'Male' ? 'Female' : 'Male';
+          drawPixelSprite(ctx, 152, 52, 2.4, {
+            age: Math.max(18, state.age - 1),
+            gender: spouseGender,
+            eraId: curEra.id,
+            happiness: Math.min(100, state.stats.happiness + 10),
+            health: 80,
+            bob: -bob,
+            isSpouse: true
+          });
+        }
+
+        // Children sprites
+        for (let i = 0; i < Math.min(2, state.children); i++) {
+          const childAge = Math.max(2, Math.min(14, state.age - 26 - i * 2));
+          drawPixelSprite(ctx, 186 + i * 26, 56, 2.0, {
+            age: childAge,
+            gender: i % 2 === 0 ? 'Male' : 'Female',
+            eraId: curEra.id,
+            happiness: 80,
+            health: 90,
+            bob
+          });
+        }
+      }
+    }
+
+    // Idle animation heartbeat (~2.5 FPS for crisp retro feel)
+    setInterval(() => {
+      if (state && !document.getElementById('screen-game').classList.contains('hidden')) {
+        pixelFrame++;
+        renderPixelVisuals();
+      }
+    }, 420);
+
+    function addLog(text, context = null, type = 'normal') {
+      state.logCount++;
+      document.getElementById('log-count').textContent = `${state.logCount} entries`;
+
+      const container = document.getElementById('life-log');
+      const card = document.createElement('div');
+      const borderClass = type === 'crisis'
+        ? 'border-l-2 border-vermilion bg-red-50/40'
+        : (type === 'milestone' ? 'border-l-2 border-sumi bg-washi' : 'border border-borderSubtle bg-paper');
+
+      card.className = `p-3 rounded-xl text-xs sm:text-sm animate-fade-in ${borderClass}`;
+      card.innerHTML = `
+        <div class="flex items-center justify-between font-mono text-[11px] text-slateMuted mb-1">
+          <span>Age ${state.age} • ${state.year} (${getGengo(state.year)})</span>
+        </div>
+        <p class="text-sumi leading-relaxed">${text}</p>
+        ${context ? `<div class="mt-2 pt-2 border-t border-borderSubtle/80 text-xs text-slateMuted leading-relaxed"><span class="font-semibold text-sumi">📊 Context:</span> ${context}</div>` : ''}
+      `;
+      container.prepend(card);
+    }
+
+    // =========================================================================
+    // 6. YEARLY SIMULATION TICK & EVENTS
+    // =========================================================================
+    function tickYear() {
+      if (!state || !state.alive) return;
+
+      state.age++;
+      state.year++;
+
+      // 1. Hedonic adaptation: Happiness drifts gently back toward ~50
+      const hapDiff = 50 - state.stats.happiness;
+      state.stats.happiness = clamp(state.stats.happiness + hapDiff * 0.12, 5, 100);
+
+      // 2. Focus effects
+      if (state.age >= 6) {
+        if (state.focus === 'study') {
+          state.stats.knowledge = clamp(state.stats.knowledge + rand(2, 4), 0, 100);
+          state.stats.happiness = clamp(state.stats.happiness - 1, 0, 100);
+        } else if (state.focus === 'work') {
+          const earn = state.currency === 'Ryo' ? rand(2, 6) : (state.year < 1950 ? rand(150, 400) : rand(350000, 950000));
+          state.netWorth += earn;
+          state.stats.health = clamp(state.stats.health - rand(1, 2), 0, 100);
+        } else if (state.focus === 'health') {
+          state.stats.health = clamp(state.stats.health + rand(2, 4), 0, 100);
+        } else if (state.focus === 'social') {
+          state.stats.relationships = clamp(state.stats.relationships + rand(2, 4), 0, 100);
+          state.stats.happiness = clamp(state.stats.happiness + rand(1, 3), 0, 100);
+        } else {
+          // Balance
+          state.stats.happiness = clamp(state.stats.happiness + 1, 0, 100);
+          state.stats.knowledge = clamp(state.stats.knowledge + 1, 0, 100);
+        }
+      }
+
+      // 3. Natural aging health decay
+      if (state.age > 45) {
+        const decay = state.age > 75 ? rand(3, 6) : (state.age > 60 ? rand(1, 3) : rand(0, 2));
+        state.stats.health = clamp(state.stats.health - decay, 0, 100);
+      }
+
+      // 4. Mortality check grounded in cohort survival curve
+      if (checkMortality()) {
+        updateHUD();
+        triggerDeath();
+        return;
+      }
+
+      // 5. Check Interactive Decisions & Milestones
+      const triggeredModal = checkDecisionsAndMilestones();
+      if (triggeredModal) {
+        updateHUD();
+        return;
+      }
+
+      // 6. Periodic organic life events
+      const crisisChance = config.dramatic ? 0.24 : 0.13;
+      if (Math.random() < crisisChance) {
+        triggerOrganicEvent();
+      } else if (state.age % 5 === 0) {
+        addLog(`Another quiet chapter passes at age ${state.age}. Life in ${state.location} continues steadily.`);
+      }
+
+      updateHUD();
+    }
+
+    function checkMortality() {
+      const sPrev = getSurvivalRate(state.birthEra.id, state.age - 1);
+      const sCurr = getSurvivalRate(state.birthEra.id, state.age);
+      let baseHazard = sPrev > 0 ? Math.max(0.0005, (sPrev - sCurr) / sPrev) : 0.25;
+
+      // Health modifier
+      if (state.stats.health <= 5) {
+        state.causeOfDeath = 'Severe health failure';
+        return true;
+      }
+      if (state.stats.health < 35) baseHazard *= 2.2;
+      else if (state.stats.health > 75) baseHazard *= 0.65;
+
+      if (config.dramatic) baseHazard *= 1.15;
+      if (state.age >= 104) {
+        state.causeOfDeath = 'Peaceful old age (Centenarian)';
+        return true;
+      }
+
+      if (Math.random() < baseHazard) {
+        state.causeOfDeath = pickCauseOfDeath();
+        return true;
+      }
+      return false;
+    }
+
+    function pickCauseOfDeath() {
+      if (state.age <= 5) return state.year < 1945 ? 'Childhood infectious illness' : 'Rare congenital condition';
+      if (state.year <= 1867) return pick(['Fever & epidemic illness', 'Tuberculosis (Roga)', 'Exhaustion & old age', 'Famine-related illness']);
+      if (state.year <= 1945) return pick(['Tuberculosis', 'Pneumonia', 'Stroke', 'Wartime hardship']);
+      return pick(['Natural old age (Rosui)', 'Heart disease', 'Cancer', 'Cerebrovascular disease']);
+    }
+
+    // =========================================================================
+    // 7. INTERACTIVE BRANCHING DECISIONS & HISTORICAL CRISES
+    // =========================================================================
+    function checkDecisionsAndMilestones() {
+      const y = state.year;
+      const a = state.age;
+
+      // Childhood Education (Age 8)
+      if (a === 8 && !state.flags.edu8) {
+        state.flags.edu8 = true;
+        if (y <= 1867) {
+          openDecisionModal({
+            tag: 'Childhood Education',
+            title: 'Your Path to Learning in Edo Japan',
+            desc: 'You are old enough to begin learning reading, writing, and arithmetic with an abacus (Soroban).',
+            context: 'Edo Japan boasted a ~40–50% male literacy rate—rivaling or exceeding Europe—thanks to neighborhood temple schools called Terakoya.',
+            choices: [
+              { label: 'Attend Terakoya (Temple School)', pct: 48, effect: () => { state.education = 'Terakoya'; state.stats.knowledge = clamp(state.stats.knowledge + 18, 0, 100); state.highlights.push('Learned reading & Soroban at a Terakoya'); addLog('You attend a local Terakoya, mastering Kana script and the Soroban abacus.'); } },
+              { label: 'Help the Family Trade / Farm', pct: 44, moneyDelta: 6, effect: () => { state.education = 'Apprentice at Home'; state.netWorth += 6; state.stats.health = clamp(state.stats.health + 6, 0, 100); addLog(`You work alongside your parents, earning ${formatMoney(6, 'Ryo', true)} and learning practical survival skills early.`); } },
+              { label: 'Domain Academy (Hanko)', pct: 8, effect: () => { state.education = 'Hanko (Confucian Classics)'; state.stats.knowledge = clamp(state.stats.knowledge + 26, 0, 100); state.highlights.push('Studied Confucian classics at a Domain Hanko'); addLog('You study Chinese classics and martial arts at a prestigious Hanko academy.'); } }
+            ]
+          });
+          return true;
+        } else {
+          openDecisionModal({
+            tag: 'Schooling',
+            title: 'Primary Education',
+            desc: 'Compulsory schooling shapes your early friendships and curiosity.',
+            context: 'After the 1872 Gakusei reform, Japan achieved near-universal elementary school enrollment within a single generation.',
+            choices: [
+              { label: 'Inherit Family Farm / Trade', pct: 68, moneyDelta: 12, effect: () => { state.occupation = state.socialClass.split(' ')[0]; state.netWorth += 12; addLog(`You take up your family's hereditary role as a ${state.occupation}, adding ${formatMoney(12, 'Ryo', true)} to your household.`); } },
+              { label: 'Apprentice in Edo or Osaka', pct: 22, effect: () => { state.occupation = 'Merchant Clerk (Tedai)'; state.location = 'Musashi Province (Tokyo)'; state.stats.knowledge = clamp(state.stats.knowledge + 12, 0, 100); state.highlights.push('Moved to the bustling capital as an apprentice'); addLog('You leave home for a bustling merchant house in the city.'); } },
+              { label: 'Serve a Local Domain Lord', pct: 10, moneyDelta: 20, effect: () => { state.occupation = 'Domain Retainer'; state.netWorth += 20; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog(`You secure a stipend of ${formatMoney(20, 'Ryo', true)} serving a regional Daimyo.`); } }
+            ]
+          });
+          return true;
+        } else if (y >= 1991 && y <= 2005) {
+          openDecisionModal({
+            tag: 'Career Crossroads',
+            title: 'Graduating into the Employment Ice Age',
+            desc: 'The Bubble has burst. Corporate hiring has frozen nationwide.',
+            context: 'The "Employment Ice Age" (Shushoku Hyogaki, 1993–2004) saw new-graduate job-to-applicant ratios plunge, creating a generation of non-regular workers.',
+            choices: [
+              { label: 'Go to University (Delay Job Hunt)', pct: 48, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 18, 0, 100); addLog('You enter university, hoping the job market recovers before graduation.'); } },
+              { label: 'Take a Local / SME Job', pct: 32, moneyDelta: 1200000, effect: () => { state.occupation = 'SME Office Worker'; state.netWorth += 1200000; addLog(`You secure a steady role at a local SME, building ${formatMoney(1200000, 'Yen', true)} in early savings.`); } },
+              { label: 'Part-time (Freeter) & Side Hustles', pct: 20, effect: () => { state.occupation = 'Freeter / Freelancer'; state.stats.happiness = clamp(state.stats.happiness + 6, 0, 100); addLog('You piece together flexible work while searching for your own path.'); } }
+            ]
+          });
+          return true;
+        } else if (y >= 2019) {
+          openDecisionModal({
+            tag: 'AI-Era Career',
+            title: 'Choosing Your Path in Modern Japan',
+            desc: 'University enrollment is at a record high, while AI and remote work are rewriting traditional corporate ladders.',
+            context: 'By the 2020s, over 57% of Japanese 18-year-olds entered 4-year universities (MEXT), while traditional lifetime employment (Shushin Koyo) began giving way to skill-based hiring.',
+            choices: [
+              { label: 'Enter University', pct: 57, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You enroll in university, blending traditional study with AI tools.'); } },
+              { label: 'Vocational / Tech School', pct: 24, moneyDelta: 1500000, effect: () => { state.education = 'Vocational College'; state.occupation = 'Tech / Design Specialist'; state.netWorth += 1500000; state.highlights.push('Built practical skills at a vocational college'); addLog(`You choose hands-on technical training and earn ${formatMoney(1500000, 'Yen', true)} early in your career.`); } },
+              { label: 'Direct Employment / Startup', pct: 19, moneyDelta: 2200000, effect: () => { state.occupation = 'Startup / BizOps Associate'; state.netWorth += 2200000; state.highlights.push('Joined a fast-moving Tokyo startup'); addLog(`You jump straight into a Tokyo startup, banking ${formatMoney(2200000, 'Yen', true)} from early execution.`); } }
+            ]
+          });
+          return true;
+        } else {
+          openDecisionModal({
+            tag: 'Career Crossroads',
+            title: 'Entering the Workforce',
+            desc: 'Japan is transforming rapidly. Where will you build your career?',
+            context: 'During the Post-war Miracle, "Shushin Koyo" (lifetime employment) and seniority-based pay became the pillars of Japan\'s middle class.',
+            choices: [
+              { label: 'Join a Major Corporation (Salaryman)', pct: 42, moneyDelta: 1800000, effect: () => { state.occupation = 'Corporate Salaryman'; state.netWorth += 1800000; state.highlights.push('Joined a major Japanese corporation'); addLog(`You enter a major company, adding ${formatMoney(1800000, 'Yen', true)} in early compensation.`); } },
+              { label: 'University / Higher Study', pct: 33, effect: () => { state.education = 'University'; state.occupation = 'Graduate Specialist'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You pursue higher education to open doors in management or research.'); } },
+              { label: 'Family Business / Local Trade', pct: 25, moneyDelta: 1200000, effect: () => { state.occupation = 'Local Business Owner'; state.netWorth += 1200000; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog(`You stay rooted in your community, earning ${formatMoney(1200000, 'Yen', true)} in local trade.`); } }
+            ]
+          });
+          return true;
+        }
+      }
+
+      // Career / Higher Education (Age 18)
+      if (a === 18 && !state.flags.career18) {
+        state.flags.career18 = true;
+        if (y <= 1867) {
+          openDecisionModal({
+            tag: 'Coming of Age',
+            title: 'Entering Adulthood in the Shogunate',
+            desc: 'It is time to establish your livelihood in Edo-era society.',
+            context: 'Most Edo commoners remained in their hereditary villages, while ambitious youths sought apprenticeships (Detchi) in Edo or Osaka merchant houses.',
+            choices: [
+              { label: 'Inherit Family Farm / Trade', pct: 68, effect: () => { state.occupation = state.socialClass.split(' ')[0]; state.netWorth += 12; addLog(`You take up your family's hereditary role as a ${state.occupation}.`); } },
+              { label: 'Apprentice in Edo or Osaka', pct: 22, effect: () => { state.occupation = 'Merchant Clerk (Tedai)'; state.location = 'Musashi Province (Tokyo)'; state.stats.knowledge = clamp(state.stats.knowledge + 12, 0, 100); state.highlights.push('Moved to the bustling capital as an apprentice'); addLog('You leave home for a bustling merchant house in the city.'); } },
+              { label: 'Serve a Local Domain Lord', pct: 10, effect: () => { state.occupation = 'Domain Retainer'; state.netWorth += 20; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog('You secure a stipend serving a regional Daimyo.'); } }
+            ]
+          });
+          return true;
+        } else if (y >= 1991 && y <= 2005) {
+          openDecisionModal({
+            tag: 'Career Crossroads',
+            title: 'Graduating into the Employment Ice Age',
+            desc: 'The Bubble has burst. Corporate hiring has frozen nationwide.',
+            context: 'The "Employment Ice Age" (Shushoku Hyogaki, 1993–2004) saw new-graduate job-to-applicant ratios plunge, creating a generation of non-regular workers.',
+            choices: [
+              { label: 'Go to University (Delay Job Hunt)', pct: 48, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 18, 0, 100); addLog('You enter university, hoping the job market recovers before graduation.'); } },
+              { label: 'Take a Local / SME Job', pct: 32, effect: () => { state.occupation = 'SME Office Worker'; state.netWorth += 1200000; addLog('You secure a steady role at a local small-to-medium enterprise.'); } },
+              { label: 'Part-time (Freeter) & Side Hustles', pct: 20, effect: () => { state.occupation = 'Freeter / Freelancer'; state.stats.happiness = clamp(state.stats.happiness + 6, 0, 100); addLog('You piece together flexible work while searching for your own path.'); } }
+            ]
+          });
+          return true;
+        } else if (y >= 2019) {
+          openDecisionModal({
+            tag: 'AI-Era Career',
+            title: 'Choosing Your Path in Modern Japan',
+            desc: 'University enrollment is at a record high, while AI and remote work are rewriting traditional corporate ladders.',
+            context: 'By the 2020s, over 57% of Japanese 18-year-olds entered 4-year universities (MEXT), while traditional lifetime employment (Shushin Koyo) began giving way to skill-based hiring.',
+            choices: [
+              { label: 'Enter University', pct: 57, effect: () => { state.education = 'University'; state.occupation = 'University Student'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You enroll in university, blending traditional study with AI tools.'); } },
+              { label: 'Vocational / Tech School', pct: 24, effect: () => { state.education = 'Vocational College'; state.occupation = 'Tech / Design Specialist'; state.netWorth += 1500000; state.highlights.push('Built practical skills at a vocational college'); addLog('You choose hands-on technical training and enter the workforce early.'); } },
+              { label: 'Direct Employment / Startup', pct: 19, effect: () => { state.occupation = 'Startup / BizOps Associate'; state.netWorth += 2200000; state.highlights.push('Joined a fast-moving Tokyo startup'); addLog('You jump straight into the workforce, betting on real-world execution.'); } }
+            ]
+          });
+          return true;
+        } else {
+          openDecisionModal({
+            tag: 'Career Crossroads',
+            title: 'Entering the Workforce',
+            desc: 'Japan is transforming rapidly. Where will you build your career?',
+            context: 'During the Post-war Miracle, "Shushin Koyo" (lifetime employment) and seniority-based pay became the pillars of Japan\'s middle class.',
+            choices: [
+              { label: 'Join a Major Corporation (Salaryman)', pct: 42, effect: () => { state.occupation = 'Corporate Salaryman'; state.netWorth += 1800000; state.highlights.push('Joined a major Japanese corporation'); addLog('You enter a major company, trading long hours for lifetime stability.'); } },
+              { label: 'University / Higher Study', pct: 33, effect: () => { state.education = 'University'; state.occupation = 'Graduate Specialist'; state.stats.knowledge = clamp(state.stats.knowledge + 20, 0, 100); addLog('You pursue higher education to open doors in management or research.'); } },
+              { label: 'Family Business / Local Trade', pct: 25, effect: () => { state.occupation = 'Local Business Owner'; state.netWorth += 1200000; state.stats.relationships = clamp(state.stats.relationships + 10, 0, 100); addLog('You stay rooted in your community, running a local trade.'); } }
+            ]
+          });
+          return true;
+        }
+      }
+
+      // Milestone: Age 20 (Coming of Age / Seijin)
+      if (a === 20 && !state.flags.mile20) {
+        state.flags.mile20 = true;
+        const surv = getSurvivalRate(state.birthEra.id, 20).toFixed(1);
+        openMilestoneModal(
+          'Pause & Reflect: Age 20 (Coming of Age)',
+          `You have reached adulthood in ${state.year} (${getGengo(state.year)}).`,
+          `Statistically, ${surv}% of people born in your era survived to reach age 20. Your current knowledge is ${Math.round(state.stats.knowledge)} and health is ${Math.round(state.stats.health)}.`
+        );
+        return true;
+      }
+
+      // Marriage Decision (Age 26)
+      if (a === 26 && !state.flags.marry26) {
+        state.flags.marry26 = true;
+        const modern = y >= 1995;
+        openDecisionModal({
+          tag: 'Personal Life',
+          title: 'Marriage & Family',
+          desc: modern
+            ? 'Friends are pairing off, though many in your generation prioritize career or independence.'
+            : 'Family and matchmakers (Omiai) are encouraging you to settle down.',
+          context: modern
+            ? 'Japan\'s average age at first marriage rose past 30 in the 2000s, and lifetime singlehood climbed above 20%.'
+            : 'Until the late 20th century, arranged introductions (Omiai) accounted for the majority of Japanese marriages.',
+          choices: [
+            { label: 'Marry & Start a Family', pct: modern ? 44 : 76, effect: () => { state.married = true; state.children = rand(1, 2); state.stats.relationships = clamp(state.stats.relationships + 18, 0, 100); state.stats.happiness = clamp(state.stats.happiness + 12, 0, 100); state.highlights.push(`Married and raised ${state.children} child${state.children > 1 ? 'ren' : ''}`); addLog(`You marry and welcome ${state.children} child${state.children > 1 ? 'ren' : ''} into your home.`); } },
+            { label: 'Marry, Focus on Partnership', pct: modern ? 22 : 14, effect: () => { state.married = true; state.stats.relationships = clamp(state.stats.relationships + 14, 0, 100); state.stats.happiness = clamp(state.stats.happiness + 10, 0, 100); state.highlights.push('Built a lifelong partnership'); addLog('You marry a supportive partner and build a quiet life together.'); } },
+            { label: 'Stay Independent', pct: modern ? 34 : 10, moneyDelta: state.currency === 'Ryo' ? 10 : 1500000, effect: () => { const gain = state.currency === 'Ryo' ? 10 : 1500000; state.stats.knowledge = clamp(state.stats.knowledge + 8, 0, 100); state.netWorth += gain; addLog(`You choose independence, saving an extra ${formatMoney(gain, state.currency, true)} for your own pursuits.`); } }
+          ]
+        });
+        return true;
+      }
+
+      // Historical Crisis: WWII (1943–1945)
+      if (y === 1944 && a >= 18 && a <= 42 && !state.flags.ww2) {
+        state.flags.ww2 = true;
+        openDecisionModal({
+          tag: 'Historical Crisis • WWII',
+          title: 'Total Wartime Mobilization (1944)',
+          desc: 'The Pacific War has reached a desperate phase. Cities face shortages and looming air raids.',
+          context: 'Over 2.3 million Japanese soldiers and 800,000 civilians lost their lives in WWII. Urban families evacuated children (Gakudo Sokai) to the countryside.',
+          choices: [
+            { label: 'Evacuate to the Countryside', pct: 45, effect: () => { state.stats.health = clamp(state.stats.health - 8, 10, 100); state.highlights.push('Survived WWII by evacuating to the countryside'); addLog('You endure severe food shortages in the countryside, but survive the war.', null, 'crisis'); } },
+            { label: 'Work in Munitions / Home Front', pct: 35, effect: () => { state.stats.health = clamp(state.stats.health - 15, 10, 100); state.highlights.push('Endured wartime home-front mobilization'); addLog('You survive exhausting shifts and air-raid sirens on the home front.', null, 'crisis'); } },
+            { label: 'Conscripted to Military Service', pct: 20, effect: () => {
+              if (Math.random() < 0.30) {
+                state.alive = false;
+                state.causeOfDeath = 'Killed in action during WWII';
+                triggerDeath();
+              } else {
+                state.stats.health = clamp(state.stats.health - 22, 10, 100);
+                state.highlights.push('Returned home alive from WWII');
+                addLog('Against heavy odds, you return home alive after the 1945 surrender.', null, 'crisis');
+              }
+            } }
+          ]
+        });
+        return true;
+      }
+
+      // Historical Crisis: 2011 Tohoku Earthquake
+      if (y === 2011 && a >= 10 && !state.flags.eq2011) {
+        state.flags.eq2011 = true;
+        openDecisionModal({
+          tag: 'Historical Event • 3.11',
+          title: 'Great East Japan Earthquake (2011)',
+          desc: 'A magnitude 9.0 earthquake shakes eastern Japan, triggering a devastating tsunami and nationwide power-saving (Setsuden).',
+          context: 'The 2011 disaster reshaped Japan\'s energy policy, disaster preparedness, and sense of community solidarity (Kizuna).',
+          choices: [
+            { label: 'Volunteer & Donate to Recovery', pct: 36, effect: () => { state.stats.relationships = clamp(state.stats.relationships + 14, 0, 100); state.stats.happiness = clamp(state.stats.happiness + 6, 0, 100); state.highlights.push('Supported Tohoku recovery efforts after 3.11'); addLog('You join relief efforts, forming deep bonds amid national grief.', null, 'milestone'); } },
+            { label: 'Focus on Protecting Your Household', pct: 64, effect: () => { state.stats.health = clamp(state.stats.health - 4, 10, 100); addLog('You stock emergency supplies and navigate months of rolling blackouts.', null, 'crisis'); } }
+          ]
+        });
+        return true;
+      }
+
+      // Milestone: Age 50
+      if (a === 50 && !state.flags.mile50) {
+        state.flags.mile50 = true;
+        const surv = getSurvivalRate(state.birthEra.id, 50).toFixed(1);
+        openMilestoneModal(
+          'Pause & Reflect: Age 50 (Midlife)',
+          `Half a century lived — it is now ${state.year} (${getGengo(state.year)}).`,
+          `Only ${surv}% of your birth cohort made it to age 50. You have lived through ${state.erasLived.size} historical era(s).`
+        );
+        return true;
+      }
+
+      return false;
+    }
+
+    function triggerOrganicEvent() {
+      const y = state.year;
+      if (y <= 1867) {
+        const events = [
+          ['A bountiful rice harvest lowers food prices across the province.', 'Rice was the literal unit of economic measurement (Koku) in Edo Japan.', 6, 4, 0],
+          ['A localized fire breaks out in the timber district; you help bucket-brigade.', 'Fires were so common in Edo they were nicknamed "Flowers of Edo" (Edo no Hana).', -4, -5, 5],
+          ['You attend a lively Kabuki performance and buy an Ukiyo-e woodblock print.', 'Woodblock prints were affordable mass-market entertainment, costing roughly the price of a bowl of soba.', 10, 0, 4]
+        ];
+        const [txt, ctx, h, he, r] = pick(events);
+        state.stats.happiness = clamp(state.stats.happiness + h, 0, 100);
+        state.stats.health = clamp(state.stats.health + he, 0, 100);
+        state.stats.relationships = clamp(state.stats.relationships + r, 0, 100);
+        addLog(txt, ctx);
+      } else if (y <= 1988) {
+        const events = [
+          ['Your household buys a new home appliance, transforming daily chores.', 'In the 1950s–60s, the TV, washing machine, and refrigerator were celebrated as the "Three Sacred Treasures."', 9, 3, 2],
+          ['You take a scenic train trip to a hot spring (Onsen) town.', 'Rail expansion made domestic Onsen travel a beloved Japanese pastime.', 8, 5, 4],
+          ['Long overtime hours leave you exhausted this winter.', 'Japan\'s postwar growth was fueled by intense workplace dedication.', -6, -7, 0]
+        ];
+        const [txt, ctx, h, he, r] = pick(events);
+        state.stats.happiness = clamp(state.stats.happiness + h, 0, 100);
+        state.stats.health = clamp(state.stats.health + he, 0, 100);
+        state.stats.relationships = clamp(state.stats.relationships + r, 0, 100);
+        addLog(txt, ctx);
+      } else {
+        const events = [
+          ['You adopt new AI workflow tools, saving hours of routine work each week.', 'Facing a shrinking workforce, Japanese firms increasingly rely on AI automation to boost per-capita productivity.', 7, 2, 0],
+          ['Inflation nudges up grocery prices; you tighten your monthly budget.', 'After 30 years of deflation, Japan saw sustained price rises return in the 2020s.', -5, 0, 0],
+          ['A reunion with old friends reminds you of the value of community.', 'Social connection is one of the strongest predictors of longevity in Japanese centenarian studies.', 10, 3, 8]
+        ];
+        const [txt, ctx, h, he, r] = pick(events);
+        state.stats.happiness = clamp(state.stats.happiness + h, 0, 100);
+        state.stats.health = clamp(state.stats.health + he, 0, 100);
+        state.stats.relationships = clamp(state.stats.relationships + r, 0, 100);
+        addLog(txt, ctx);
+      }
+    }
+
+    // =========================================================================
+    // 8. MODAL SYSTEM
+    // =========================================================================
+    function openDecisionModal({ tag, title, desc, context, choices }) {
+      pauseGame();
+      modalOpen = true;
+      document.getElementById('modal-tag').textContent = tag;
+      document.getElementById('modal-age-year').textContent = `Age ${state.age} • ${state.year}`;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = desc;
+
+      const ctxBox = document.getElementById('modal-context-box');
+      if (context) {
+        ctxBox.classList.remove('hidden');
+        document.getElementById('modal-context-text').textContent = context;
+      } else {
+        ctxBox.classList.add('hidden');
+      }
+
+      const list = document.getElementById('modal-choices');
+      list.innerHTML = '';
+      choices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left p-3.5 rounded-xl border border-borderSubtle hover:border-vermilion hover:bg-red-50/30 transition-all flex items-center justify-between gap-3 group';
+        const moneyBadge = c.moneyDelta
+          ? `<span class="block font-mono text-[11px] text-emerald-700 mt-0.5">+${formatMoney(c.moneyDelta, state.currency)} <span class="text-slateMuted">${getUsdEquivalent(c.moneyDelta, state.currency)}</span></span>`
+          : '';
+        btn.innerHTML = `
+          <div>
+            <span class="font-medium text-sm text-sumi group-hover:text-vermilion transition-colors">${c.label}</span>
+            ${moneyBadge}
+          </div>
+          <span class="font-mono text-xs px-2 py-0.5 rounded bg-washi border border-borderSubtle text-slateMuted shrink-0">${c.pct}% of peers</span>
+        `;
+        btn.onclick = () => {
+          closeModal();
+          c.effect();
+          if (state.alive) {
+            updateHUD();
+            if (autoPlay) playGame();
+          }
+        };
+        list.appendChild(btn);
+      });
+
+      document.getElementById('modal-overlay').classList.remove('hidden');
+    }
+
+    function openMilestoneModal(title, desc, context) {
+      pauseGame();
+      modalOpen = true;
+      document.getElementById('modal-tag').textContent = 'Milestone Reflection';
+      document.getElementById('modal-age-year').textContent = `Age ${state.age} • ${state.year}`;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = desc;
+      document.getElementById('modal-context-box').classList.remove('hidden');
+      document.getElementById('modal-context-text').textContent = context;
+
+      const list = document.getElementById('modal-choices');
+      list.innerHTML = '';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'w-full py-3 rounded-xl bg-sumi hover:bg-gray-800 text-white font-semibold text-sm transition-colors';
+      btn.textContent = 'Continue Life →';
+      btn.onclick = () => {
+        closeModal();
+        if (autoPlay) playGame();
+      };
+      list.appendChild(btn);
+      document.getElementById('modal-overlay').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modalOpen = false;
+      document.getElementById('modal-overlay').classList.add('hidden');
+    }
+
+    // =========================================================================
+    // 9. REAL-TIME HTML5 CANVAS SURVIVAL CURVE
+    // =========================================================================
+    function drawSurvivalCurve() {
+      const canvas = document.getElementById('survival-canvas');
+      if (!canvas || !state) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      const pad = { top: 10, right: 10, bottom: 16, left: 26 };
+      const plotW = w - pad.left - pad.right;
+      const plotH = h - pad.top - pad.bottom;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = '#E5E2DC';
+      ctx.lineWidth = 1;
+      [0, 50, 100].forEach(pct => {
+        const y = pad.top + plotH * (1 - pct / 100);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + plotW, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#6B7280';
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${pct}`, pad.left - 4, y + 3);
+      });
+
+      // Curve
+      ctx.beginPath();
+      for (let age = 0; age <= 100; age += 2) {
+        const pct = getSurvivalRate(state.birthEra.id, age);
+        const x = pad.left + (age / 100) * plotW;
+        const y = pad.top + plotH * (1 - pct / 100);
+        if (age === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = '#111827';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Subtle area fill
+      ctx.lineTo(pad.left + plotW, pad.top + plotH);
+      ctx.lineTo(pad.left, pad.top + plotH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(17, 24, 39, 0.05)';
+      ctx.fill();
+
+      // Current Age Glowing Vermilion Dot
+      const curAge = Math.min(100, state.age);
+      const curPct = getSurvivalRate(state.birthEra.id, curAge);
+      const cx = pad.left + (curAge / 100) * plotW;
+      const cy = pad.top + plotH * (1 - curPct / 100);
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(217, 45, 32, 0.22)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#D92D20';
+      ctx.fill();
+    }
+
+    window.addEventListener('resize', () => {
+      if (state && !document.getElementById('screen-game').classList.contains('hidden')) {
+        drawSurvivalCurve();
+      }
+    });
+
+    // =========================================================================
+    // 10. DEATH SUMMARY & VIRAL SHARE ENGINE (PNG + COPY)
+    // =========================================================================
+    function getLifeTitle() {
+      if (state.age >= 90) return `A Centenarian Witness of ${state.birthEra.name}`;
+      if (state.age < 15) return `A Brief Spark in ${state.birthEra.name}`;
+      if (state.erasLived.size >= 3) return `Bridge Across Three Eras of Japan`;
+      if (state.stats.knowledge >= 75) return `Scholar & Observer of Changing Times`;
+      if (state.stats.relationships >= 75) return `A Life Woven in Community`;
+      return `A Quiet Life in ${state.birthEra.name}`;
+    }
+
+    function triggerDeath() {
+      state.alive = false;
+      pauseGame();
+      closeModal();
+
+      const survAtDeath = getSurvivalRate(state.birthEra.id, state.age);
+      const outlivedPct = Math.max(0, Math.min(99.9, 100 - survAtDeath)).toFixed(1);
+      state.outlivedPct = outlivedPct;
+      state.lifeTitle = getLifeTitle();
+
+      document.getElementById('sum-title').textContent = state.lifeTitle;
+      document.getElementById('sum-dates').textContent = `${state.name} • ${state.birthYear} (${getGengo(state.birthYear)}) — ${state.year} (${getGengo(state.year)})`;
+      document.getElementById('sum-age').textContent = `${state.age}`;
+      document.getElementById('sum-percentile').textContent = `${outlivedPct}%`;
+      document.getElementById('sum-job').textContent = state.occupation;
+      document.getElementById('sum-worth').textContent = formatMoney(state.netWorth, state.currency);
+      const sumUsd = document.getElementById('sum-worth-usd');
+      sumUsd.textContent = getUsdEquivalent(state.netWorth, state.currency);
+      sumUsd.title = getCurrencyTooltip(state.currency);
+      document.getElementById('sum-cause').textContent = state.causeOfDeath || 'Natural causes';
+      document.getElementById('sum-eras').textContent = Array.from(state.erasLived).join(' → ');
+      document.getElementById('sum-place').textContent = state.birthplace;
+
+      const ul = document.getElementById('sum-highlights');
+      ul.innerHTML = '';
+      const list = state.highlights.length > 0 ? state.highlights : [`Lived through the ${state.birthEra.name} in ${state.birthplace}.`];
+      list.slice(0, 5).forEach(h => {
+        const li = document.createElement('li');
+        li.textContent = h;
+        ul.appendChild(li);
+      });
+
+      showScreen('screen-summary');
+    }
+
+    function downloadShareCard() {
+      const canvas = document.getElementById('share-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = 1200, H = 630;
+
+      // Washi background
+      ctx.fillStyle = '#F8F7F4';
+      ctx.fillRect(0, 0, W, H);
+
+      // Outer editorial border
+      ctx.strokeStyle = '#E5E2DC';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(28, 28, W - 56, H - 56);
+
+      // Top Vermilion Accent Bar
+      ctx.fillStyle = '#D92D20';
+      ctx.fillRect(60, 64, 48, 6);
+
+      // Brand header
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '600 18px "JetBrains Mono", monospace';
+      ctx.fillText('1 IN 120 MILLION — JAPAN HISTORICAL LIFE SIMULATOR', 60, 102);
+
+      // Embedded Crisp Pixel Art Portrait Frame (Top-Right)
+      const curEra = getEraByYear(state.year);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(W - 210, 62, 150, 150);
+      ctx.strokeStyle = '#E5E2DC';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(W - 210, 62, 150, 150);
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      drawPixelSprite(ctx, W - 195, 76, 7.5, {
+        age: state.age,
+        gender: state.gender,
+        eraId: curEra.id,
+        happiness: state.stats.happiness,
+        health: state.stats.health,
+        bob: 0
+      });
+      ctx.restore();
+
+      // Life Title
+      ctx.fillStyle = '#111827';
+      ctx.font = '700 42px Georgia, serif';
+      ctx.fillText(state.lifeTitle, 60, 168);
+
+      // Name & Dates
+      ctx.fillStyle = '#4B5563';
+      ctx.font = '500 24px Inter, sans-serif';
+      ctx.fillText(`${state.name}  •  ${state.birthYear} (${getGengo(state.birthYear)}) — ${state.year} (${getGengo(state.year)})`, 60, 212);
+
+      // Divider
+      ctx.strokeStyle = '#E5E2DC';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(60, 245);
+      ctx.lineTo(W - 60, 245);
+      ctx.stroke();
+
+      // 3 Stat Cards
+      const boxes = [
+        { label: 'AGE AT DEATH', val: `${state.age} yrs`, accent: false },
+        { label: 'PEERS OUTLIVED', val: `${state.outlivedPct}%`, accent: true },
+        { label: 'FINAL ROLE', val: state.occupation, accent: false }
+      ];
+      boxes.forEach((b, i) => {
+        const bx = 60 + i * 368;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(bx, 275, 344, 130);
+        ctx.strokeStyle = '#E5E2DC';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bx, 275, 344, 130);
+
+        ctx.fillStyle = '#6B7280';
+        ctx.font = '600 16px "JetBrains Mono", monospace';
+        ctx.fillText(b.label, bx + 24, 315);
+
+        ctx.fillStyle = b.accent ? '#D92D20' : '#111827';
+        ctx.font = '700 32px Inter, sans-serif';
+        ctx.fillText(b.val.slice(0, 18), bx + 24, 372);
+      });
+
+      // Details Footer
+      ctx.fillStyle = '#111827';
+      ctx.font = '500 20px Inter, sans-serif';
+      ctx.fillText(`Birthplace: ${state.birthplace}   |   Eras: ${Array.from(state.erasLived).join(' → ')}`, 60, 465);
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '400 18px Inter, sans-serif';
+      ctx.fillText(`Cause of Death: ${state.causeOfDeath}   •   Final Estate: ${formatMoney(state.netWorth, state.currency, true)}`, 60, 502);
+
+      // Bottom Credit
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '500 16px "JetBrains Mono", monospace';
+      ctx.fillText('Grounded in Japanese historical demography & e-Stat data • Built by Tokyo AI Ops', 60, 570);
+
+      // Trigger Download
+      const link = document.createElement('a');
+      link.download = `1-in-120-million-${state.birthYear}-${state.year}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('Share card PNG downloaded!');
+    }
+
+    function copyShareText() {
+      const text = `I lived as ${state.name} (${state.birthYear}–${state.year}, Age ${state.age}) in "1 in 120 Million: A Statistical Life in Japan".\nBorn in ${state.birthplace} (${state.socialClass}), outlived ${state.outlivedPct}% of my cohort. Final role: ${state.occupation}.`;
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Share text copied for X / Reddit!');
+      } catch (e) {
+        showToast('Could not copy text.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 2400);
+    }
+
+    // Boot
+    window.onload = () => {
+      initStartScreen();
+    };
+  </script>
+</body>
+</html>
